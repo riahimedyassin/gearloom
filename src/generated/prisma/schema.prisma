@@ -1,0 +1,153 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int          @id @default(autoincrement())
+  firstname     String
+  lastname      String
+  email         String       @unique
+  password      String
+  createdTasks  Task[]
+  assignedTasks Task[]       @relation("AssignedTasks")
+  projects      Project[]
+  comments      Comment[]
+  pomorounds    Pomorounds[]
+}
+
+enum ProjectType {
+  learning
+  custom
+  startup
+}
+
+// todo : refine the model for better context generation for llm
+model Project {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String
+  type        ProjectType
+  ownerId     Int
+  owner       User        @relation(fields: [ownerId], references: [id])
+  tasks       Task[]
+}
+
+model Column {
+  id     Int     @id @default(autoincrement())
+  name   String
+  isDone Boolean @default(false)
+  tasks  Task[]
+}
+
+enum TaskPriority {
+  low
+  high
+  medium
+}
+
+model Task {
+  id           Int              @id @default(autoincrement())
+  title        String
+  description  String
+  priority     TaskPriority
+  order        Int              @default(0)
+  createdAt    DateTime         @default(now())
+  createdById  Int
+  createdBy    User             @relation(fields: [createdById], references: [id])
+  assignedToId Int
+  assignedTo   User             @relation("AssignedTasks", fields: [assignedToId], references: [id])
+  subTasks     SubTask[]
+  pomorounds   Pomorounds[]
+  projectId    Int
+  project      Project          @relation(fields: [projectId], references: [id])
+  taskLabels   TaskLabel[]
+  columnId     Int
+  column       Column           @relation(fields: [columnId], references: [id])
+  comments     Comment[]
+  attachments  TaskAttachment[]
+  updatedAt    DateTime         @updatedAt
+
+  @@index([projectId])
+  @@index([assignedToId])
+  @@index([createdById])
+  @@index([createdAt])
+  @@index([columnId])
+}
+
+model SubTask {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String
+  priority    TaskPriority
+  createdAt   DateTime     @default(now())
+  taskId      Int
+  task        Task         @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  updatedAt   DateTime     @updatedAt
+}
+
+// potential compilation for notification management etc.
+model Comment {
+  id          Int      @id @default(autoincrement())
+  content     Json // storing the Tiptap editor content. 
+  createdAt   DateTime @default(now())
+  createdById Int
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  taskId      Int
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  updatedAt   DateTime @updatedAt
+}
+
+enum AttachmentType {
+  picture
+  video
+  link
+  document
+}
+
+model TaskAttachment {
+  id     Int            @id @default(autoincrement())
+  type   AttachmentType
+  link   String
+  taskId Int
+  task   Task           @relation(references: [id], fields: [taskId])
+}
+
+model Pomorounds {
+  id          Int      @id @default(autoincrement())
+  rounds      Int
+  longBreaks  Int
+  shortBreaks Int
+  userId      Int
+  taskId      Int
+  task        Task     @relation(fields: [taskId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+  updatedAt   DateTime @updatedAt
+}
+
+model Label {
+  id         Int         @id @default(autoincrement())
+  name       String      @unique
+  taskLabels TaskLabel[]
+}
+
+model TaskLabel {
+  id      Int   @id @default(autoincrement())
+  taskId  Int
+  labelId Int
+  task    Task  @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  label   Label @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, labelId]) // Prevent duplicate relationships
+}
