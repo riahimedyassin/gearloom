@@ -29,6 +29,21 @@ export interface Task {
   assignedTo: User;
   columnId: number;
   projectId: number;
+  subtasks: Subtask[];
+  comments: Comment[];
+}
+
+export interface Subtask {
+  id: number;
+  title: string;
+  done: boolean;
+}
+
+export interface Comment {
+  id: number;
+  author: User;
+  content: string;
+  createdAt: string;
 }
 
 export interface DragItem {

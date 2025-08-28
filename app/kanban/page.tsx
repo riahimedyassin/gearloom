@@ -26,6 +26,19 @@ const mockColumns: Column[] = [
           lastname: "Doe",
           email: "john@example.com",
         },
+        subtasks: [
+          { id: 1, title: "Research database options", done: true },
+          { id: 2, title: "Create entity diagrams", done: false },
+          { id: 3, title: "Review with team", done: false },
+        ],
+        comments: [
+          {
+            id: 1,
+            author: { id: 1, firstname: "John", lastname: "Doe", email: "john@example.com" },
+            content: "Starting with PostgreSQL for this project",
+            createdAt: "2024-01-01T10:00:00Z",
+          },
+        ],
       },
       {
         id: 4,
@@ -42,6 +55,8 @@ const mockColumns: Column[] = [
           lastname: "Doe",
           email: "john@example.com",
         },
+        subtasks: [],
+        comments: [],
       },
     ],
   },
@@ -65,6 +80,18 @@ const mockColumns: Column[] = [
           lastname: "Smith",
           email: "jane@example.com",
         },
+        subtasks: [
+          { id: 4, title: "Setup JWT tokens", done: true },
+          { id: 5, title: "Create login page", done: false },
+        ],
+        comments: [
+          {
+            id: 2,
+            author: { id: 2, firstname: "Jane", lastname: "Smith", email: "jane@example.com" },
+            content: "Working on the JWT implementation",
+            createdAt: "2024-01-02T14:30:00Z",
+          },
+        ],
       },
     ],
   },
@@ -88,6 +115,12 @@ const mockColumns: Column[] = [
           lastname: "Doe",
           email: "john@example.com",
         },
+        subtasks: [
+          { id: 6, title: "Initialize git repository", done: true },
+          { id: 7, title: "Setup package.json", done: true },
+          { id: 8, title: "Configure build tools", done: true },
+        ],
+        comments: [],
       },
     ],
   },
@@ -172,6 +205,8 @@ export default function KanbanPage() {
         lastname: "Doe",
         email: "john@example.com",
       }, // Default assignee
+      subtasks: [],
+      comments: [],
     };
 
     setColumns((prevColumns) =>

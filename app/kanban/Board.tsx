@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import ColumnComponent from './Column';
-import { CustomDragLayer } from './DragLayer';
-import TaskModal from './TaskModal';
-import { Column, NewColumnForm, NewTaskForm, Task } from './types';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import { Plus, X } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Plus, X } from "lucide-react";
+import React, { useState } from "react";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import ColumnComponent from "./Column";
+import { CustomDragLayer } from "./DragLayer";
+import TaskModal from "./ModalTask";
+import { Column, NewColumnForm, NewTaskForm, Task } from "./types";
 
 interface BoardProps {
   columns: Column[];
@@ -20,21 +20,27 @@ interface BoardProps {
   onCreateColumn: (columnData: NewColumnForm) => void;
 }
 
-export const Board: React.FC<BoardProps> = ({ columns, onTaskMove, onTaskUpdate, onCreateTask, onCreateColumn }) => {
+export const Board: React.FC<BoardProps> = ({
+  columns,
+  onTaskMove,
+  onTaskUpdate,
+  onCreateTask,
+  onCreateColumn,
+}) => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isCreatingColumn, setIsCreatingColumn] = useState(false);
-  const [newColumnName, setNewColumnName] = useState('');
+  const [newColumnName, setNewColumnName] = useState("");
 
   const handleCreateColumn = () => {
     if (newColumnName.trim()) {
       onCreateColumn({ name: newColumnName.trim() });
-      setNewColumnName('');
+      setNewColumnName("");
       setIsCreatingColumn(false);
     }
   };
 
   const handleCancelCreateColumn = () => {
-    setNewColumnName('');
+    setNewColumnName("");
     setIsCreatingColumn(false);
   };
 
@@ -43,11 +49,6 @@ export const Board: React.FC<BoardProps> = ({ columns, onTaskMove, onTaskUpdate,
       <CustomDragLayer />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Project Board</h1>
-            <p className="text-slate-600">Manage your tasks with ease</p>
-          </div>
-          
           <div className="flex gap-6 overflow-x-auto pb-4">
             {columns.map((column) => (
               <ColumnComponent
@@ -58,7 +59,7 @@ export const Board: React.FC<BoardProps> = ({ columns, onTaskMove, onTaskUpdate,
                 onCreateTask={onCreateTask}
               />
             ))}
-            
+
             {/* Add Column Button or Input */}
             <div className="w-80 flex-shrink-0">
               {isCreatingColumn ? (
@@ -72,9 +73,9 @@ export const Board: React.FC<BoardProps> = ({ columns, onTaskMove, onTaskUpdate,
                       className="mb-3 focus:ring-2 focus:ring-blue-500 transition-all"
                       autoFocus
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                           handleCreateColumn();
-                        } else if (e.key === 'Escape') {
+                        } else if (e.key === "Escape") {
                           handleCancelCreateColumn();
                         }
                       }}
