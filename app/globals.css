@@ -131,8 +131,32 @@
     }
   }
   
+  @keyframes shine {
+    0% {
+      background-position: 0% 0%;
+    }
+    50% {
+      background-position: 100% 100%;
+    }
+    100% {
+      background-position: 0% 0%;
+    }
+  }
+  
   .animate-shimmer {
     animation: shimmer 2s ease-in-out infinite;
+  }
+  
+  .animate-shine {
+    animation: shine var(--duration) ease-in-out infinite;
+  }
+  
+  .timer-glow {
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.3), 0 0 40px rgba(249, 115, 22, 0.1);
+  }
+  
+  .timer-glow-blue {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 0 40px rgba(59, 130, 246, 0.1);
   }
   
   .line-clamp-2 {

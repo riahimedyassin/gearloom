@@ -11,6 +11,11 @@ interface TaskDropZoneProps {
   columnId: number;
   onTaskMove: (taskId: number, newColumnId: number, newOrder?: number) => void;
   onTaskClick: (task: Task) => void;
+  onTaskDelete?: (taskId: number) => void;
+  onTaskDuplicate?: (task: Task) => void;
+  onTaskArchive?: (taskId: number) => void;
+  onTimerClick?: (task: Task) => void;
+  activeTimerTaskId?: number | null;
 }
 
 export const TaskDropZone: React.FC<TaskDropZoneProps> = ({
@@ -19,6 +24,11 @@ export const TaskDropZone: React.FC<TaskDropZoneProps> = ({
   columnId,
   onTaskMove,
   onTaskClick,
+  onTaskDelete,
+  onTaskDuplicate,
+  onTaskArchive,
+  onTimerClick,
+  activeTimerTaskId,
 }) => {
   const taskRef = useRef<HTMLDivElement>(null);
   const [dragPosition, setDragPosition] = useState<"top" | "bottom" | null>(
@@ -141,7 +151,15 @@ export const TaskDropZone: React.FC<TaskDropZoneProps> = ({
 
       {/* The actual task */}
       <div ref={taskRef} className="relative z-10 transition-transform duration-200 hover:scale-[1.01]">
-        <TaskComponent task={task} onClick={() => onTaskClick(task)} />
+        <TaskComponent 
+          task={task} 
+          onClick={() => onTaskClick(task)}
+          onDelete={onTaskDelete}
+          onDuplicate={onTaskDuplicate}
+          onArchive={onTaskArchive}
+          onTimerClick={onTimerClick}
+          isActiveTimer={activeTimerTaskId === task.id}
+        />
       </div>
 
       {/* Drop zone below task */}

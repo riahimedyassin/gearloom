@@ -3,12 +3,11 @@ import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
-    DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { X, Save, Info, Paperclip, ListOrdered, MessageSquare } from "lucide-react";
+import { X, Save } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { Task } from "./types";
 import SubtasksManager from "./components/SubtasksManager";
@@ -16,20 +15,17 @@ import CommentsManager from "./components/CommentsManager";
 import TaskSidebar from "./components/TaskSidebar";
 import AttachmentsManager from "./components/AttachmentsManager";
 import StepsManager from "./components/StepsManager";
-import { ShineBorder } from "@/components/magicui/shine-border";
 
 interface TaskModalProps {
   task: Task;
   onClose: () => void;
   onUpdate: (task: Task) => void;
-  onTimerUpdate?: (taskId: number, timer: Task['pomodoroTimer']) => void;
 }
 
 export const TaskModal: React.FC<TaskModalProps> = ({
   task,
   onClose,
   onUpdate,
-  onTimerUpdate,
 }) => {
   const [editedTask, setEditedTask] = useState(task);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -51,21 +47,11 @@ export const TaskModal: React.FC<TaskModalProps> = ({
     setEditedTask(updatedTask);
   };
 
-  // Check if timer is running
-  const isTimerRunning = editedTask.pomodoroTimer?.isActive && 
-    editedTask.pomodoroTimer.sessions.some(s => s.isActive);
-
   return (
     <Dialog open={true} onOpenChange={() => onClose()}>
-      <div className="relative">
-        <DialogContent className="!max-w-[1200px] w-[90vw] h-[90vh] overflow-hidden p-0 flex flex-col">
-        {/* Screen reader accessible title */}
-        <DialogTitle className="sr-only">
-          Task: {editedTask.title}
-        </DialogTitle>
-        
+      <DialogContent className="!max-w-[1200px] w-[90vw] max-h-[95vh] overflow-hidden p-0">
         {/* Header with close button */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
           {/* Task ID and Title */}
           <div className="flex-1 min-w-0">
             {isEditingTitle ? (
@@ -136,22 +122,10 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             {/* Tabs for additional content */}
             <Tabs defaultValue="details" className="w-full">
               <TabsList className="grid w-full grid-cols-4 mb-4">
-                <TabsTrigger value="details" className="text-xs flex items-center gap-1">
-                  <Info className="w-3 h-3" />
-                  Details
-                </TabsTrigger>
-                <TabsTrigger value="attachments" className="text-xs flex items-center gap-1">
-                  <Paperclip className="w-3 h-3" />
-                  Resources
-                </TabsTrigger>
-                <TabsTrigger value="steps" className="text-xs flex items-center gap-1">
-                  <ListOrdered className="w-3 h-3" />
-                  Steps
-                </TabsTrigger>
-                <TabsTrigger value="comments" className="text-xs flex items-center gap-1">
-                  <MessageSquare className="w-3 h-3" />
-                  Activity
-                </TabsTrigger>
+                <TabsTrigger value="details" className="text-xs">Details</TabsTrigger>
+                <TabsTrigger value="attachments" className="text-xs">Resources</TabsTrigger>
+                <TabsTrigger value="steps" className="text-xs">Steps</TabsTrigger>
+                <TabsTrigger value="comments" className="text-xs">Activity</TabsTrigger>
               </TabsList>
 
               <TabsContent value="details" className="space-y-4 mt-0">
@@ -174,11 +148,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
 
           {/* Right sidebar */}
           <div className="w-80 bg-gray-50 border-l border-gray-200 p-6 overflow-y-auto">
-            <TaskSidebar 
-              task={editedTask} 
-              onTaskUpdate={handleTaskUpdate}
-              onTimerUpdate={onTimerUpdate}
-            />
+            <TaskSidebar task={editedTask} onTaskUpdate={handleTaskUpdate} />
           </div>
         </div>
 
@@ -195,18 +165,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             </Button>
           </div>
         )}
-        
-        {/* Animated shine border for active timer */}
-        {isTimerRunning && (
-          <ShineBorder
-            className="absolute inset-0 rounded-[inherit]"
-            shineColor={["#F97316", "#FB923C", "#FDBA74"]}
-            duration={4}
-            borderWidth={3}
-          />
-        )}
       </DialogContent>
-      </div>
     </Dialog>
   );
 };

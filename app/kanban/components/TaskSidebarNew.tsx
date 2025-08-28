@@ -6,15 +6,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AlertTriangle, ArrowUp, ArrowDown } from "lucide-react";
 import { Task } from "../types";
 import UserCombobox from "./UserCombobox";
-import PomodoroTimer from "./PomodoroTimer";
 
 interface TaskSidebarProps {
   task: Task;
   onTaskUpdate?: (updatedTask: Task) => void;
-  onTimerUpdate?: (taskId: number, timer: Task['pomodoroTimer']) => void;
 }
 
-export const TaskSidebar: React.FC<TaskSidebarProps> = ({ task, onTaskUpdate, onTimerUpdate }) => {
+export const TaskSidebar: React.FC<TaskSidebarProps> = ({ task, onTaskUpdate }) => {
   const getPriorityIcon = (priority: string) => {
     switch (priority) {
       case "high":
@@ -63,14 +61,6 @@ export const TaskSidebar: React.FC<TaskSidebarProps> = ({ task, onTaskUpdate, on
 
   return (
     <div className="space-y-6">
-      {/* Pomodoro Timer */}
-      {onTimerUpdate && (
-        <PomodoroTimer
-          task={task}
-          onUpdateTimer={onTimerUpdate}
-        />
-      )}
-      
       {/* Priority */}
       <div>
         <Label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 block">

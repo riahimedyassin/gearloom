@@ -18,6 +18,12 @@ interface BoardProps {
   onTaskUpdate: (task: Task) => void;
   onCreateTask: (columnId: number, taskData: NewTaskForm) => void;
   onCreateColumn: (columnData: NewColumnForm) => void;
+  onTaskDelete?: (taskId: number) => void;
+  onTaskDuplicate?: (task: Task) => void;
+  onTaskArchive?: (taskId: number) => void;
+  onTimerClick?: (task: Task) => void;
+  onTimerUpdate?: (taskId: number, timer: Task['pomodoroTimer']) => void;
+  activeTimerTaskId?: number | null;
 }
 
 export const Board: React.FC<BoardProps> = ({
@@ -26,6 +32,12 @@ export const Board: React.FC<BoardProps> = ({
   onTaskUpdate,
   onCreateTask,
   onCreateColumn,
+  onTaskDelete,
+  onTaskDuplicate,
+  onTaskArchive,
+  onTimerClick,
+  onTimerUpdate,
+  activeTimerTaskId,
 }) => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isCreatingColumn, setIsCreatingColumn] = useState(false);
@@ -47,9 +59,9 @@ export const Board: React.FC<BoardProps> = ({
   return (
     <DndProvider backend={HTML5Backend}>
       <CustomDragLayer />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+      <div className="min-h-screen bg-white p-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex gap-6 overflow-x-auto pb-4">
+          <div className="flex gap-4 overflow-x-auto pb-4">
             {columns.map((column) => (
               <ColumnComponent
                 key={column.id}
@@ -57,63 +69,60 @@ export const Board: React.FC<BoardProps> = ({
                 onTaskMove={onTaskMove}
                 onTaskClick={setSelectedTask}
                 onCreateTask={onCreateTask}
+                onTaskDelete={onTaskDelete}
+                onTaskDuplicate={onTaskDuplicate}
+                onTaskArchive={onTaskArchive}
+                onTimerClick={onTimerClick}
+                activeTimerTaskId={activeTimerTaskId}
               />
             ))}
 
             {/* Add Column Button or Input */}
-            <div className="w-80 flex-shrink-0">
+            <div className="w-72 flex-shrink-0">
               {isCreatingColumn ? (
-                <Card className="border-2 border-dashed border-slate-300 bg-white/50 backdrop-blur-sm">
-                  <CardContent className="p-4">
-                    <Input
-                      type="text"
-                      value={newColumnName}
-                      onChange={(e) => setNewColumnName(e.target.value)}
-                      placeholder="Enter column name..."
-                      className="mb-3 focus:ring-2 focus:ring-blue-500 transition-all"
-                      autoFocus
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          handleCreateColumn();
-                        } else if (e.key === "Escape") {
-                          handleCancelCreateColumn();
-                        }
-                      }}
-                    />
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={handleCreateColumn}
-                        size="sm"
-                        className="bg-blue-600 hover:bg-blue-700 transition-colors"
-                      >
-                        <Plus className="w-4 h-4 mr-1" />
-                        Add Column
-                      </Button>
-                      <Button
-                        onClick={handleCancelCreateColumn}
-                        variant="ghost"
-                        size="sm"
-                        className="text-slate-600 hover:text-slate-800"
-                      >
-                        <X className="w-4 h-4 mr-1" />
-                        Cancel
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                <Card className="h-32 border-2 border-dashed border-slate-300 bg-white/30 backdrop-blur-sm hover:bg-white/50 hover:border-slate-400 transition-all duration-200 cursor-pointer group">
-                  <CardContent className="h-full flex items-center justify-center p-4">
+                <div className="bg-gray-100 border border-gray-300 rounded p-3">
+                  <Input
+                    type="text"
+                    value={newColumnName}
+                    onChange={(e) => setNewColumnName(e.target.value)}
+                    placeholder="Enter list name..."
+                    className="mb-2 text-sm bg-white border-gray-300 focus:ring-1 focus:ring-blue-400"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleCreateColumn();
+                      } else if (e.key === "Escape") {
+                        handleCancelCreateColumn();
+                      }
+                    }}
+                  />
+                  <div className="flex gap-1">
                     <Button
-                      onClick={() => setIsCreatingColumn(true)}
-                      variant="ghost"
-                      className="w-full h-full flex flex-col items-center justify-center text-slate-500 hover:text-slate-700 group-hover:scale-105 transition-all"
+                      onClick={handleCreateColumn}
+                      size="sm"
+                      className="bg-blue-600 hover:bg-blue-700 h-7 px-3 text-xs"
                     >
-                      <Plus className="w-8 h-8 mb-2" />
-                      <span className="text-sm font-medium">Add Column</span>
+                      Add
                     </Button>
-                  </CardContent>
-                </Card>
+                    <Button
+                      onClick={handleCancelCreateColumn}
+                      variant="ghost"
+                      size="sm"
+                      className="text-gray-600 hover:text-gray-800 h-7 px-3 text-xs"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <Button
+                  onClick={() => setIsCreatingColumn(true)}
+                  variant="ghost"
+                  className="w-full h-16 border-2 border-dashed border-gray-300 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-700 transition-colors rounded text-sm"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add another list
+                </Button>
               )}
             </div>
           </div>
@@ -126,6 +135,7 @@ export const Board: React.FC<BoardProps> = ({
           task={selectedTask}
           onClose={() => setSelectedTask(null)}
           onUpdate={onTaskUpdate}
+          onTimerUpdate={onTimerUpdate}
         />
       )}
     </DndProvider>

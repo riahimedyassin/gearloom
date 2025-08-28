@@ -3,17 +3,39 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle, CheckCircle2, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { AlertTriangle, ArrowUp, ArrowDown, MessageCircle, Subtitles, MoreVertical, Trash2, Edit, Copy, Archive, Timer, Play, Pause } from "lucide-react";
 import React from "react";
 import { useDrag } from "react-dnd";
 import { Task as TaskType } from "./types";
+import { ShineBorder } from "@/components/magicui/shine-border";
 
 interface TaskProps {
   task: TaskType;
   onClick: () => void;
+  onDelete?: (taskId: number) => void;
+  onDuplicate?: (task: TaskType) => void;
+  onArchive?: (taskId: number) => void;
+  onTimerClick?: (task: TaskType) => void;
+  isActiveTimer?: boolean;
 }
 
-export const TaskComponent: React.FC<TaskProps> = ({ task, onClick }) => {
+export const TaskComponent: React.FC<TaskProps> = ({ 
+  task, 
+  onClick, 
+  onDelete, 
+  onDuplicate, 
+  onArchive,
+  onTimerClick,
+  isActiveTimer = false
+}) => {
   const [{ isDragging }, drag, preview] = useDrag({
     type: "TASK",
     item: {
@@ -30,113 +52,250 @@ export const TaskComponent: React.FC<TaskProps> = ({ task, onClick }) => {
     }),
   });
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "border-l-red-500 bg-gradient-to-r from-red-50 to-white";
-      case "medium":
-        return "border-l-amber-500 bg-gradient-to-r from-amber-50 to-white";
-      case "low":
-        return "border-l-emerald-500 bg-gradient-to-r from-emerald-50 to-white";
-      default:
-        return "border-l-slate-500 bg-gradient-to-r from-slate-50 to-white";
-    }
-  };
-
-  const getPriorityBadge = (priority: string) => {
+  const getPriorityConfig = (priority: string) => {
     switch (priority) {
       case "high":
         return {
-          variant: "destructive" as const,
-          icon: AlertCircle,
-          className: "bg-red-100 text-red-700 hover:bg-red-200",
+          icon: AlertTriangle,
+          color: "text-red-600",
+          bgColor: "bg-red-50",
+          borderColor: "border-red-200",
         };
       case "medium":
         return {
-          variant: "default" as const,
-          icon: Clock,
-          className: "bg-amber-100 text-amber-700 hover:bg-amber-200",
+          icon: ArrowUp,
+          color: "text-orange-600",
+          bgColor: "bg-orange-50",
+          borderColor: "border-orange-200",
         };
       case "low":
         return {
-          variant: "secondary" as const,
-          icon: CheckCircle2,
-          className: "bg-emerald-100 text-emerald-700 hover:bg-emerald-200",
+          icon: ArrowDown,
+          color: "text-green-600",
+          bgColor: "bg-green-50",
+          borderColor: "border-green-200",
         };
       default:
         return {
-          variant: "outline" as const,
-          icon: Clock,
-          className: "bg-slate-100 text-slate-700 hover:bg-slate-200",
+          icon: ArrowUp,
+          color: "text-gray-600",
+          bgColor: "bg-gray-50",
+          borderColor: "border-gray-200",
         };
     }
   };
 
-  const priorityConfig = getPriorityBadge(task.priority);
+  const priorityConfig = getPriorityConfig(task.priority);
   const PriorityIcon = priorityConfig.icon;
 
+  const completedSubtasks = task.subtasks?.filter(s => s.done).length || 0;
+  const totalSubtasks = task.subtasks?.length || 0;
+  const commentsCount = task.comments?.length || 0;
+
+  // Pomodoro timer logic
+  const { pomodoroTimer } = task;
+  const activeSession = pomodoroTimer?.sessions.find(s => s.isActive);
+  const isTimerRunning = pomodoroTimer?.isActive && activeSession;
+  
+  const formatTimerDisplay = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  const formatTotalTime = (minutes: number): string => {
+    if (minutes < 60) return `${minutes}m`;
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins}m`;
+  };
+
   return (
-    <Card
-      ref={drag as any}
-      onClick={onClick}
-      style={{ opacity: isDragging ? 0.4 : 1 }}
-      className={`cursor-grab active:cursor-grabbing border-l-4 transition-all duration-300 hover:shadow-lg transform hover:scale-[1.02] group ${getPriorityColor(
-        task.priority
-      )} ${
-        isDragging
-          ? "shadow-xl rotate-1 scale-105 border-blue-300 ring-2 ring-blue-200"
-          : "shadow-sm hover:shadow-md border-slate-200"
-      }`}
-    >
-      <CardContent >
-        <div className="space-y-3">
-          <div className="flex items-start justify-between">
-            <h4 className="font-semibold text-slate-900 line-clamp-2 group-hover:text-slate-700 transition-colors leading-tight">
+    <div className="relative">
+      <Card
+        ref={drag as any}
+        onClick={onClick}
+        style={{ opacity: isDragging ? 0.5 : 1 }}
+        className={`cursor-pointer transition-all duration-200 hover:shadow-md group border ${
+          isActiveTimer 
+            ? 'border-blue-400 bg-blue-50/50 shadow-sm timer-glow-blue' 
+            : isTimerRunning 
+              ? 'border-orange-300 bg-orange-50/50 timer-glow' 
+              : 'border-gray-200 bg-white hover:border-gray-300'
+        } ${
+          isDragging ? "shadow-lg rotate-1 scale-105" : ""
+        }`}
+      >
+        <CardContent className="p-3">
+        <div className="space-y-2">
+          {/* Task Title */}
+          <div className="flex items-start gap-2 group">
+            <h4 className="text-sm font-medium text-gray-900 line-clamp-2 flex-1 leading-tight">
               {task.title}
             </h4>
-            <Badge
-              variant={priorityConfig.variant}
-              className={`ml-2 flex items-center gap-1 text-xs ${priorityConfig.className}`}
-            >
-              <PriorityIcon className="w-3 h-3" />
-              {task.priority.toUpperCase()}
-            </Badge>
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <PriorityIcon className={`w-4 h-4 ${priorityConfig.color}`} />
+              
+              {/* Three-dot menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-100"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <MoreVertical className="w-3 h-3 text-gray-500" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onClick();
+                    }}
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit Task
+                  </DropdownMenuItem>
+                  {onDuplicate && (
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDuplicate(task);
+                      }}
+                    >
+                      <Copy className="w-4 h-4 mr-2" />
+                      Duplicate Task
+                    </DropdownMenuItem>
+                  )}
+                  {onArchive && (
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onArchive(task.id);
+                      }}
+                    >
+                      <Archive className="w-4 h-4 mr-2" />
+                      Archive Task
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  {onDelete && (
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(task.id);
+                      }}
+                      className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete Task
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
 
+          {/* Task Description */}
           {task.description && (
-            <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed">
+            <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed">
               {task.description}
             </p>
           )}
 
-          <div className="flex items-center justify-between pt-2">
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
-              <span className="text-xs text-slate-500 font-medium">
-                Task #{task.id}
-              </span>
-              {task.subtasks && task.subtasks.length > 0 && (
-                <Badge variant="outline" className="text-xs h-5 px-1">
-                  {task.subtasks.filter(s => s.done).length}/{task.subtasks.length}
-                </Badge>
+          {/* Pomodoro Timer Section */}
+          {pomodoroTimer && (
+            <div className="flex items-center justify-between py-2 px-2 rounded-md bg-gray-50/50 border">
+              <div className="flex items-center gap-2">
+                <Timer className={`w-4 h-4 ${isTimerRunning ? 'text-orange-600' : isActiveTimer ? 'text-blue-600' : 'text-gray-500'}`} />
+                <div className="text-xs">
+                  {isTimerRunning && activeSession ? (
+                    <div className="flex flex-col">
+                      <span className="font-mono font-semibold text-orange-700">
+                        {formatTimerDisplay(activeSession.timeRemaining)}
+                      </span>
+                      <span className="text-gray-500 text-[10px]">
+                        {activeSession.type === 'work' ? '🍅 Working' : 
+                         activeSession.type === 'shortBreak' ? '☕ Break' : '🛋️ Long Break'}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-gray-700">
+                        {formatTotalTime(pomodoroTimer.totalTimeSpent)}
+                      </span>
+                      <span className="text-gray-500 text-[10px]">Total time</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {onTimerClick && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0 hover:bg-blue-100"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onTimerClick(task);
+                  }}
+                >
+                  {isTimerRunning ? (
+                    <Pause className="w-3 h-3 text-orange-600" />
+                  ) : (
+                    <Play className="w-3 h-3 text-blue-600" />
+                  )}
+                </Button>
               )}
-              {task.comments && task.comments.length > 0 && (
-                <Badge variant="outline" className="text-xs h-5 px-1">
-                  💬 {task.comments.length}
-                </Badge>
+            </div>
+          )}
+
+          {/* Bottom Section */}
+          <div className="flex items-center justify-between pt-1">
+            {/* Task ID and Counters */}
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <span className="font-mono font-medium">
+                TASK-{task.id}
+              </span>
+              
+              {totalSubtasks > 0 && (
+                <div className="flex items-center gap-1">
+                  <Subtitles className="w-3 h-3" />
+                  <span>{completedSubtasks}/{totalSubtasks}</span>
+                </div>
+              )}
+              
+              {commentsCount > 0 && (
+                <div className="flex items-center gap-1">
+                  <MessageCircle className="w-3 h-3" />
+                  <span>{commentsCount}</span>
+                </div>
               )}
             </div>
 
-            <Avatar className="w-7 h-7 border-2 border-white shadow-sm">
-              <AvatarFallback className="text-xs font-semibold bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700">
-                {task.assignedTo.firstname[0]}
-                {task.assignedTo.lastname[0]}
+            {/* Assignee Avatar */}
+            <Avatar className="w-6 h-6 border border-gray-200">
+              <AvatarFallback className="text-xs font-medium bg-blue-100 text-blue-700">
+                {task.assignedTo.firstname[0]}{task.assignedTo.lastname[0]}
               </AvatarFallback>
             </Avatar>
           </div>
         </div>
       </CardContent>
+      
+      {/* Animated shine border for active timer */}
+      {isTimerRunning && (
+        <ShineBorder
+          className="absolute inset-0 rounded-[inherit]"
+          shineColor={["#F97316", "#FB923C", "#FDBA74"]}
+          duration={3}
+          borderWidth={2}
+        />
+      )}
     </Card>
+    </div>
   );
 };
 
