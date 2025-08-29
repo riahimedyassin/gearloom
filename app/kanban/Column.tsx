@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, GripVertical } from 'lucide-react';
 import React, { useState } from 'react';
 import { useDrop } from 'react-dnd';
 import { TaskDropZone } from "./TaskDropZone";
@@ -94,32 +94,35 @@ export const ColumnComponent: React.FC<ColumnProps> = ({
     >
       <CardHeader className="pb-2 px-3 pt-3">
         <div className="flex items-center justify-between">
-          {isEditingColumnName ? (
-            <Input
-              type="text"
-              value={editedColumnName}
-              onChange={(e) => setEditedColumnName(e.target.value)}
-              onBlur={() => setIsEditingColumnName(false)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  setIsEditingColumnName(false);
-                  // Here you would call an onUpdateColumn prop if you had one
-                } else if (e.key === 'Escape') {
-                  setEditedColumnName(column.name);
-                  setIsEditingColumnName(false);
-                }
-              }}
-              className="text-sm font-semibold border-none p-0 h-auto focus:ring-1 focus:ring-blue-400"
-              autoFocus
-            />
-          ) : (
-            <h3 
-              className="text-sm font-semibold text-gray-700 cursor-pointer hover:text-gray-900 transition-colors flex-1 uppercase tracking-wide"
-              onClick={() => setIsEditingColumnName(true)}
-            >
-              {column.name}
-            </h3>
-          )}
+          <div className="flex items-center gap-2 flex-1">
+            <GripVertical className="w-4 h-4 text-gray-400 cursor-grab active:cursor-grabbing" />
+            {isEditingColumnName ? (
+              <Input
+                type="text"
+                value={editedColumnName}
+                onChange={(e) => setEditedColumnName(e.target.value)}
+                onBlur={() => setIsEditingColumnName(false)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    setIsEditingColumnName(false);
+                    // Here you would call an onUpdateColumn prop if you had one
+                  } else if (e.key === 'Escape') {
+                    setEditedColumnName(column.name);
+                    setIsEditingColumnName(false);
+                  }
+                }}
+                className="text-sm font-semibold border-none p-0 h-auto focus:ring-1 focus:ring-blue-400 flex-1"
+                autoFocus
+              />
+            ) : (
+              <h3 
+                className="text-sm font-semibold text-gray-700 cursor-pointer hover:text-gray-900 transition-colors flex-1 uppercase tracking-wide"
+                onClick={() => setIsEditingColumnName(true)}
+              >
+                {column.name}
+              </h3>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-medium text-gray-500 bg-gray-200 px-2 py-1 rounded-full min-w-[24px] text-center">
               {column.tasks.length}

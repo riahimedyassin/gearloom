@@ -761,6 +761,7 @@ export default function KanbanPage() {
       onTimerClick={handleTimerClick}
       onTimerUpdate={handleUpdateTimer}
       activeTimerTaskId={activeTimerTaskId}
+      onColumnOrderChange={setColumns}
     />
   );
 }

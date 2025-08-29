@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Plus, X } from "lucide-react";
-import React, { useState } from "react";
-import { DndProvider } from "react-dnd";
+import React, { useState, useRef } from "react";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import ColumnComponent from "./Column";
 import { CustomDragLayer } from "./DragLayer";
@@ -24,7 +24,55 @@ interface BoardProps {
   onTimerClick?: (task: Task) => void;
   onTimerUpdate?: (taskId: number, timer: Task['pomodoroTimer']) => void;
   activeTimerTaskId?: number | null;
+  onColumnOrderChange?: (columns: Column[]) => void;
 }
+
+// DraggableColumn wrapper for column drag-and-drop
+interface DraggableColumnProps {
+  column: Column;
+  index: number;
+  moveColumn: (from: number, to: number) => void;
+  onTaskMove: (taskId: number, newColumnId: number, newOrder?: number) => void;
+  onTaskClick: (task: Task) => void;
+  onCreateTask: (columnId: number, taskData: NewTaskForm) => void;
+  onTaskDelete?: (taskId: number) => void;
+  onTaskDuplicate?: (task: Task) => void;
+  onTaskArchive?: (taskId: number) => void;
+  onTimerClick?: (task: Task) => void;
+  activeTimerTaskId?: number | null;
+}
+
+const DraggableColumn: React.FC<DraggableColumnProps> = ({ 
+  column, 
+  index, 
+  moveColumn, 
+  ...props 
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  
+  const [, drop] = useDrop({
+    accept: "COLUMN",
+    hover: (item: { index: number }) => {
+      if (item.index === index) return;
+      moveColumn(item.index, index);
+      item.index = index;
+    },
+  });
+  
+  const [{ isDragging }, drag] = useDrag({
+    type: "COLUMN",
+    item: { id: column.id, index },
+    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
+  });
+  
+  drag(drop(ref));
+  
+  return (
+    <div ref={ref} style={{ opacity: isDragging ? 0.5 : 1 }}>
+      <ColumnComponent column={column} {...props} />
+    </div>
+  );
+};
 
 export const Board: React.FC<BoardProps> = ({
   columns,
@@ -38,6 +86,7 @@ export const Board: React.FC<BoardProps> = ({
   onTimerClick,
   onTimerUpdate,
   activeTimerTaskId,
+  onColumnOrderChange,
 }) => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isCreatingColumn, setIsCreatingColumn] = useState(false);
@@ -56,16 +105,27 @@ export const Board: React.FC<BoardProps> = ({
     setIsCreatingColumn(false);
   };
 
+  const moveColumn = (from: number, to: number) => {
+    const updated = [...columns];
+    const [removed] = updated.splice(from, 1);
+    updated.splice(to, 0, removed);
+    if (onColumnOrderChange) {
+      onColumnOrderChange(updated);
+    }
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <CustomDragLayer />
       <div className="min-h-screen bg-white p-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex gap-4 overflow-x-auto pb-4">
-            {columns.map((column) => (
-              <ColumnComponent
+            {columns.map((column, idx) => (
+              <DraggableColumn
                 key={column.id}
                 column={column}
+                index={idx}
+                moveColumn={moveColumn}
                 onTaskMove={onTaskMove}
                 onTaskClick={setSelectedTask}
                 onCreateTask={onCreateTask}
