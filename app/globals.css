@@ -165,4 +165,46 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+
+  /* Smooth drag and drop animations */
+  .column-drag-container {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .column-drag-container.dragging {
+    transform: rotate(1deg) scale(1.02);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    z-index: 50;
+  }
+
+  .column-drag-container.hover {
+    transform: scale(1.005);
+  }
+
+  .drag-preview-column {
+    animation: dragFloat 0.5s ease-in-out infinite alternate;
+  }
+
+  @keyframes dragFloat {
+    0% {
+      transform: translateY(0px) rotate(1deg);
+    }
+    100% {
+      transform: translateY(-2px) rotate(-1deg);
+    }
+  }
+
+  .drag-handle {
+    transition: all 0.15s ease-in-out;
+  }
+
+  .drag-handle:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    transform: scale(1.1);
+  }
+
+  .drag-handle:active {
+    background-color: rgba(0, 0, 0, 0.1);
+    transform: scale(0.95);
+  }
 }

@@ -49,27 +49,83 @@ const DraggableColumn: React.FC<DraggableColumnProps> = ({
   ...props 
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<HTMLDivElement>(null);
   
-  const [, drop] = useDrop({
+  const [{ isOver }, drop] = useDrop({
     accept: "COLUMN",
-    hover: (item: { index: number }) => {
-      if (item.index === index) return;
+    hover: (item: { index: number }, monitor) => {
+      if (!ref.current || item.index === index) return;
+      
+      // Get the bounding rectangle of the target
+      const hoverBoundingRect = ref.current.getBoundingClientRect();
+      
+      // Get horizontal middle
+      const hoverMiddleX = (hoverBoundingRect.right - hoverBoundingRect.left) / 2;
+      
+      // Get cursor position
+      const clientOffset = monitor.getClientOffset();
+      if (!clientOffset) return;
+      
+      // Get pixels to the left
+      const hoverClientX = clientOffset.x - hoverBoundingRect.left;
+      
+      // Only perform the move when the mouse has crossed half of the items width
+      // When dragging left, only move when the cursor is below 50%
+      // When dragging right, only move when the cursor is above 50%
+      if (item.index < index && hoverClientX < hoverMiddleX) {
+        return;
+      }
+      
+      if (item.index > index && hoverClientX > hoverMiddleX) {
+        return;
+      }
+      
+      // Time to actually perform the action
       moveColumn(item.index, index);
       item.index = index;
     },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
   });
   
-  const [{ isDragging }, drag] = useDrag({
+  const [{ isDragging }, drag, preview] = useDrag({
     type: "COLUMN",
-    item: { id: column.id, index },
-    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
+    item: () => ({ 
+      id: column.id, 
+      index,
+      name: column.name,
+      tasks: column.tasks 
+    }),
+    collect: (monitor) => ({ 
+      isDragging: monitor.isDragging(),
+    }),
+    options: {
+      dropEffect: "move",
+    },
   });
   
-  drag(drop(ref));
+  // Use drag handle for better UX - only the grip can initiate drag
+  const dragHandleRef = useRef<HTMLDivElement>(null);
+  drag(dragHandleRef);
+  drop(ref);
+  
+  // Use empty image as drag preview to use custom drag layer
+  React.useEffect(() => {
+    preview(new Image(), { captureDraggingState: true });
+  }, [preview]);
   
   return (
-    <div ref={ref} style={{ opacity: isDragging ? 0.5 : 1 }}>
-      <ColumnComponent column={column} {...props} />
+    <div 
+      ref={ref} 
+      style={{ 
+        opacity: isDragging ? 0.4 : 1,
+      }}
+      className={`column-drag-container ${
+        isDragging ? 'dragging' : isOver ? 'hover' : ''
+      }`}
+    >
+      <ColumnComponent column={column} dragHandleRef={dragHandleRef} {...props} />
     </div>
   );
 };
@@ -105,14 +161,18 @@ export const Board: React.FC<BoardProps> = ({
     setIsCreatingColumn(false);
   };
 
-  const moveColumn = (from: number, to: number) => {
+  // Throttled column movement for smoother experience
+  const moveColumn = React.useCallback((from: number, to: number) => {
+    if (from === to) return;
+    
     const updated = [...columns];
     const [removed] = updated.splice(from, 1);
     updated.splice(to, 0, removed);
+    
     if (onColumnOrderChange) {
       onColumnOrderChange(updated);
     }
-  };
+  }, [columns, onColumnOrderChange]);
 
   return (
     <DndProvider backend={HTML5Backend}>

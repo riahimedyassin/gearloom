@@ -20,6 +20,7 @@ interface ColumnProps {
   onTaskArchive?: (taskId: number) => void;
   onTimerClick?: (task: Task) => void;
   activeTimerTaskId?: number | null;
+  dragHandleRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 export const ColumnComponent: React.FC<ColumnProps> = ({ 
@@ -31,7 +32,8 @@ export const ColumnComponent: React.FC<ColumnProps> = ({
   onTaskDuplicate, 
   onTaskArchive,
   onTimerClick,
-  activeTimerTaskId
+  activeTimerTaskId,
+  dragHandleRef
 }) => {
   const [isCreatingTask, setIsCreatingTask] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -95,7 +97,12 @@ export const ColumnComponent: React.FC<ColumnProps> = ({
       <CardHeader className="pb-2 px-3 pt-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 flex-1">
-            <GripVertical className="w-4 h-4 text-gray-400 cursor-grab active:cursor-grabbing" />
+            <div 
+              ref={dragHandleRef}
+              className="flex items-center justify-center w-6 h-6 rounded hover:bg-gray-100 transition-colors cursor-grab active:cursor-grabbing group drag-handle"
+            >
+              <GripVertical className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+            </div>
             {isEditingColumnName ? (
               <Input
                 type="text"

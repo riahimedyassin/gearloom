@@ -49,10 +49,19 @@ export const CustomDragLayer: React.FC<DragLayerProps> = () => {
     y: number;
   }): React.CSSProperties => {
     const { x, y } = currentOffset;
-    const transform = `translate(${x}px, ${y}px) rotate(3deg)`;
+    let transform = `translate(${x}px, ${y}px)`;
+    
+    // Add different transforms based on item type
+    if (itemType === "TASK") {
+      transform += ` rotate(3deg)`;
+    } else if (itemType === "COLUMN") {
+      transform += ` rotate(1deg) scale(1.02)`;
+    }
+    
     return {
       transform,
       WebkitTransform: transform,
+      transition: 'transform 0.1s ease-out',
     };
   };
 
@@ -219,11 +228,13 @@ interface ColumnDragPreviewProps {
 
 const ColumnDragPreview: React.FC<ColumnDragPreviewProps> = ({ column }) => {
   return (
-    <Card className="w-72 bg-white border border-gray-200 shadow-2xl transform scale-105 rotate-1">
+    <Card className="w-72 bg-white border border-gray-200 shadow-2xl transform scale-105 drag-preview-column">
       <CardContent className="p-3">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <GripVertical className="w-4 h-4 text-gray-400" />
+            <div className="flex items-center justify-center w-6 h-6 rounded bg-gray-100">
+              <GripVertical className="w-4 h-4 text-gray-500" />
+            </div>
             <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
               {column.name || "Column"}
             </h3>
@@ -232,8 +243,8 @@ const ColumnDragPreview: React.FC<ColumnDragPreviewProps> = ({ column }) => {
             {column.tasks?.length || 0}
           </span>
         </div>
-        <div className="h-16 bg-gray-50 rounded border-2 border-dashed border-gray-300 flex items-center justify-center">
-          <span className="text-xs text-gray-500">Moving column...</span>
+        <div className="h-16 bg-gradient-to-r from-blue-50 to-indigo-50 rounded border-2 border-dashed border-blue-300 flex items-center justify-center">
+          <span className="text-xs text-blue-600 font-medium animate-pulse">Moving column...</span>
         </div>
       </CardContent>
     </Card>
