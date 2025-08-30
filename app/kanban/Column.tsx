@@ -88,13 +88,13 @@ export const ColumnComponent: React.FC<ColumnProps> = ({
   return (
     <Card 
       ref={drop as any}
-      className={`w-72 flex-shrink-0 transition-all duration-200 bg-gray-50 border border-gray-200 ${
+      className={`w-72 h-full flex-shrink-0 transition-all duration-200 bg-gray-50 border border-gray-200 flex flex-col ${
         isOver && canDrop 
           ? 'bg-blue-50 border-blue-300 shadow-md' 
           : 'hover:shadow-sm'
       }`}
     >
-      <CardHeader className="pb-2 px-3 pt-3">
+      <CardHeader className="pb-2 px-3 pt-3 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 flex-1">
             <div 
@@ -147,7 +147,7 @@ export const ColumnComponent: React.FC<ColumnProps> = ({
         </div>
       </CardHeader>
       
-      <CardContent className="p-3 space-y-2 min-h-[200px] max-h-[calc(100vh-200px)] overflow-y-auto">
+      <CardContent className="p-3 space-y-2 min-h-[200px] flex-1 overflow-y-auto">
         {column.tasks.length === 0 ? (
           <div className="text-center text-gray-400 py-6">
             <div className="text-xs">
