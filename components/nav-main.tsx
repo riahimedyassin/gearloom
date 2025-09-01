@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
+import { usePomodoroStore } from "@/stores";
 
 import {
   Collapsible,
@@ -26,12 +27,20 @@ export function NavMain({
     url: string;
     icon?: LucideIcon;
     isActive?: boolean;
+    action?: string;
     items?: {
       title: string;
       url: string;
     }[];
   }[];
 }) {
+  const { openTimer } = usePomodoroStore();
+
+  const handleItemClick = (item: any) => {
+    if (item.action === "pomodoro") {
+      openTimer();
+    }
+  };
   return (
     <SidebarGroup className="mb-4 group-data-[collapsible=icon]:mb-2">
       <SidebarGroupLabel className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 px-1 group-data-[collapsible=icon]:hidden">
@@ -48,6 +57,8 @@ export function NavMain({
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton
+                  asChild={!item.action}
+                  onClick={item.action ? () => handleItemClick(item) : undefined}
                   tooltip={item.title}
                   className={`
                     h-9 rounded-lg transition-colors duration-150
@@ -63,22 +74,46 @@ export function NavMain({
                     }
                   `}
                 >
-                  {item.icon && (
-                    <item.icon
-                      className={`
-                      h-4 w-4
-                      group-data-[collapsible=icon]:h-4 group-data-[collapsible=icon]:w-4
-                      ${
-                        item.isActive ? "text-primary" : "text-muted-foreground"
-                      }
-                    `}
-                    />
-                  )}
-                  <span className="text-sm group-data-[collapsible=icon]:hidden">
-                    {item.title}
-                  </span>
-                  {item.items && item.items.length > 0 && (
-                    <ChevronRight className="ml-auto h-3 w-3 text-muted-foreground transition-transform duration-150 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden" />
+                  {!item.action ? (
+                    <a href={item.url} className="flex items-center w-full">
+                      {item.icon && (
+                        <item.icon
+                          className={`
+                          h-4 w-4 mr-3
+                          group-data-[collapsible=icon]:h-4 group-data-[collapsible=icon]:w-4 group-data-[collapsible=icon]:mr-0
+                          ${
+                            item.isActive ? "text-primary" : "text-muted-foreground"
+                          }
+                        `}
+                        />
+                      )}
+                      <span className="text-sm group-data-[collapsible=icon]:hidden">
+                        {item.title}
+                      </span>
+                      {item.items && item.items.length > 0 && (
+                        <ChevronRight className="ml-auto h-3 w-3 text-muted-foreground transition-transform duration-150 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden" />
+                      )}
+                    </a>
+                  ) : (
+                    <>
+                      {item.icon && (
+                        <item.icon
+                          className={`
+                          h-4 w-4
+                          group-data-[collapsible=icon]:h-4 group-data-[collapsible=icon]:w-4
+                          ${
+                            item.isActive ? "text-primary" : "text-muted-foreground"
+                          }
+                        `}
+                        />
+                      )}
+                      <span className="text-sm group-data-[collapsible=icon]:hidden">
+                        {item.title}
+                      </span>
+                      {item.items && item.items.length > 0 && (
+                        <ChevronRight className="ml-auto h-3 w-3 text-muted-foreground transition-transform duration-150 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden" />
+                      )}
+                    </>
                   )}
                 </SidebarMenuButton>
               </CollapsibleTrigger>

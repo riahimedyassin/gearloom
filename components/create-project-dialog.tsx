@@ -4,71 +4,69 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  createProjectSchema,
-  keywordSuggestions,
-  technologyOptions,
-  type CreateProjectFormData,
+    createProjectSchema,
+    keywordSuggestions,
+    technologyOptions,
+    type CreateProjectFormData,
 } from "@/schemas/projects/createProject";
 import { useUIStore } from "@/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  AlertTriangle,
-  ArrowLeft,
-  ArrowRight,
-  BarChart3,
-  Brain,
-  Briefcase,
-  Building,
-  Building2,
-  Calendar,
-  Check,
-  Clock,
-  Code,
-  Database,
-  FileText,
-  Globe,
-  GraduationCap,
-  Heart,
-  Layers,
-  Lightbulb,
-  Megaphone,
-  Monitor,
-  Palette,
-  Plus,
-  Rocket,
-  Settings,
-  Smartphone,
-  Target,
-  TrendingUp,
-  User,
-  Users,
-  X,
-  Zap,
+    AlertTriangle,
+    ArrowLeft,
+    ArrowRight,
+    BarChart3,
+    Brain,
+    Building,
+    Building2,
+    Calendar,
+    Check,
+    Clock,
+    Code,
+    Database,
+    FileText,
+    Globe,
+    GraduationCap,
+    Layers,
+    Lightbulb,
+    Megaphone,
+    Monitor,
+    Palette,
+    Plus,
+    Rocket,
+    Settings,
+    Smartphone,
+    Target,
+    TrendingUp,
+    User,
+    Users,
+    X,
+    Zap,
 } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -111,7 +109,6 @@ const steps = [
   },
 ];
 
-// Project type icons mapping
 const projectTypeIcons: Record<string, React.ReactNode> = {
   "web-development": <Globe className="w-5 h-5" />,
   "mobile-app": <Smartphone className="w-5 h-5" />,
@@ -126,25 +123,6 @@ const projectTypeIcons: Record<string, React.ReactNode> = {
   education: <GraduationCap className="w-5 h-5" />,
   personal: <User className="w-5 h-5" />,
   other: <Layers className="w-5 h-5" />,
-};
-
-// Category icons mapping
-const categoryIcons: Record<string, React.ReactNode> = {
-  startup: <Rocket className="w-5 h-5" />,
-  enterprise: <Building className="w-5 h-5" />,
-  personal: <User className="w-5 h-5" />,
-  freelance: <Briefcase className="w-5 h-5" />,
-  "open-source": <Code className="w-5 h-5" />,
-  academic: <GraduationCap className="w-5 h-5" />,
-  "non-profit": <Heart className="w-5 h-5" />,
-};
-
-// Priority colors
-const priorityStyles: Record<string, string> = {
-  low: "text-green-600 bg-green-50 border-green-200",
-  medium: "text-yellow-600 bg-yellow-50 border-yellow-200",
-  high: "text-orange-600 bg-orange-50 border-orange-200",
-  critical: "text-red-600 bg-red-50 border-red-200",
 };
 
 interface MultiSelectFieldProps {
@@ -548,7 +526,7 @@ export function CreateProjectDialog() {
                             defaultValue={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger>
+                              <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select project type" />
                               </SelectTrigger>
                             </FormControl>
@@ -600,7 +578,7 @@ export function CreateProjectDialog() {
                             defaultValue={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger>
+                              <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select category" />
                               </SelectTrigger>
                             </FormControl>
@@ -639,7 +617,7 @@ export function CreateProjectDialog() {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="max-w-md">
+                            <SelectTrigger className="w-full">
                               <SelectValue placeholder="Select priority level" />
                             </SelectTrigger>
                           </FormControl>
@@ -726,7 +704,7 @@ export function CreateProjectDialog() {
                                 defaultValue={field.value}
                               >
                                 <FormControl>
-                                  <SelectTrigger className="h-12">
+                                  <SelectTrigger className="h-12 w-full">
                                     <SelectValue placeholder="Select team size" />
                                   </SelectTrigger>
                                 </FormControl>
@@ -828,7 +806,7 @@ export function CreateProjectDialog() {
                                 defaultValue={field.value}
                               >
                                 <FormControl>
-                                  <SelectTrigger className="h-12">
+                                  <SelectTrigger className="h-12 w-full">
                                     <SelectValue placeholder="Select timeline" />
                                   </SelectTrigger>
                                 </FormControl>

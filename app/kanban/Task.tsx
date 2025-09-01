@@ -22,6 +22,7 @@ import {
   MoreVertical,
   Pause,
   Play,
+  Square,
   Subtitles,
   Timer,
   Trash2,
@@ -29,6 +30,7 @@ import {
 import React from "react";
 import { useDrag } from "react-dnd";
 import { Task as TaskType } from "./types";
+import { usePomodoroStore } from "@/stores";
 
 interface TaskProps {
   task: TaskType;
@@ -49,6 +51,23 @@ export const TaskComponent: React.FC<TaskProps> = ({
   onTimerClick,
   isActiveTimer = false,
 }) => {
+  const { 
+    linkedTask, 
+    timerState, 
+    timeLeft, 
+    sessionType,
+    startTimer, 
+    pauseTimer, 
+    stopTimer,
+    openTimer,
+    setLinkedTask
+  } = usePomodoroStore();
+
+  // Check if this task is currently linked to the pomodoro timer
+  const isTaskLinked = linkedTask?.id === task.id;
+  const isTimerActive = isTaskLinked && timerState === "running";
+  const isTimerPaused = isTaskLinked && timerState === "paused";
+
   const [{ isDragging }, drag, preview] = useDrag({
     type: "TASK",
     item: {
@@ -105,10 +124,10 @@ export const TaskComponent: React.FC<TaskProps> = ({
   const totalSubtasks = task.subtasks?.length || 0;
   const commentsCount = task.comments?.length || 0;
 
-  // Pomodoro timer logic
+  // Pomodoro timer logic - now uses Zustand store
   const { pomodoroTimer } = task;
   const activeSession = pomodoroTimer?.sessions.find((s) => s.isActive);
-  const isTimerRunning = pomodoroTimer?.isActive && activeSession;
+  const isTimerRunning = isTimerActive || (pomodoroTimer?.isActive && activeSession);
 
   const formatTimerDisplay = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
@@ -123,6 +142,36 @@ export const TaskComponent: React.FC<TaskProps> = ({
     return `${hours}h ${mins}m`;
   };
 
+  const handleTimerClick = () => {
+    if (isTaskLinked) {
+      // If this task is linked, handle play/pause/stop
+      if (timerState === "running") {
+        pauseTimer();
+      } else if (timerState === "paused") {
+        startTimer();
+      } else {
+        // Start new timer session
+        startTimer();
+      }
+    } else {
+      // Link this task and open timer
+      const linkedTaskData = {
+        id: task.id,
+        title: task.title,
+        description: task.description,
+        columnId: task.columnId,
+        projectId: task.projectId,
+      };
+      setLinkedTask(linkedTaskData);
+      openTimer();
+    }
+  };
+
+  const handleStopTimer = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    stopTimer();
+  };
+
   return (
     <div className="relative">
       <Card
@@ -130,10 +179,12 @@ export const TaskComponent: React.FC<TaskProps> = ({
         onClick={onClick}
         style={{ opacity: isDragging ? 0.5 : 1 }}
         className={`cursor-pointer transition-all duration-200 hover:shadow-md group border ${
-          isActiveTimer
+          isTaskLinked && timerState === "running"
             ? "border-blue-400 bg-blue-50/50 shadow-sm timer-glow-blue"
             : isTimerRunning
             ? "border-orange-300 bg-orange-50/50 timer-glow"
+            : isTaskLinked && timerState === "paused"
+            ? "border-yellow-300 bg-yellow-50/50"
             : "border-gray-200 bg-white hover:border-gray-300"
         } ${isDragging ? "shadow-lg rotate-1 scale-105" : ""}`}
       >
@@ -216,21 +267,32 @@ export const TaskComponent: React.FC<TaskProps> = ({
               </p>
             )}
 
-            {/* Pomodoro Timer Section */}
-            {pomodoroTimer && (
+            {/* Pomodoro Timer Section - Enhanced with Zustand Store */}
+            {(pomodoroTimer || isTaskLinked) && (
               <div className="flex items-center justify-between py-2 px-2 rounded-md bg-gray-50/50 dark:bg-gray-800/30 border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-2">
                   <Timer
                     className={`w-4 h-4 ${
-                      isTimerRunning
-                        ? "text-orange-600 dark:text-orange-400"
-                        : isActiveTimer
+                      isTaskLinked && timerState === "running"
                         ? "text-blue-600 dark:text-blue-400"
+                        : isTimerRunning
+                        ? "text-orange-600 dark:text-orange-400"
+                        : isTaskLinked && timerState === "paused"
+                        ? "text-yellow-600 dark:text-yellow-400"
                         : "text-gray-500 dark:text-gray-400"
                     }`}
                   />
                   <div className="text-xs">
-                    {isTimerRunning && activeSession ? (
+                    {isTaskLinked && timerState !== "idle" ? (
+                      <div className="flex flex-col">
+                        <span className="font-mono font-semibold text-blue-700 dark:text-blue-300">
+                          {formatTimerDisplay(timeLeft)}
+                        </span>
+                        <span className="text-gray-500 dark:text-gray-400 text-[10px]">
+                          {timerState === "running" ? "🍅 Active" : timerState === "paused" ? "⏸️ Paused" : "⏹️ Stopped"} • {sessionType === "work" ? "Work" : sessionType === "short-break" ? "Break" : "Long Break"}
+                        </span>
+                      </div>
+                    ) : isTimerRunning && activeSession ? (
                       <div className="flex flex-col">
                         <span className="font-mono font-semibold text-orange-700 dark:text-orange-300">
                           {formatTimerDisplay(activeSession.timeRemaining)}
@@ -246,7 +308,7 @@ export const TaskComponent: React.FC<TaskProps> = ({
                     ) : (
                       <div className="flex flex-col">
                         <span className="font-semibold text-gray-700 dark:text-gray-300">
-                          {formatTotalTime(pomodoroTimer.totalTimeSpent)}
+                          {pomodoroTimer ? formatTotalTime(pomodoroTimer.totalTimeSpent) : "0m"}
                         </span>
                         <span className="text-gray-500 dark:text-gray-400 text-[10px]">
                           Total time
@@ -256,23 +318,38 @@ export const TaskComponent: React.FC<TaskProps> = ({
                   </div>
                 </div>
 
-                {onTimerClick && (
+                {/* Enhanced Timer Controls */}
+                <div className="flex items-center gap-1">
                   <Button
                     variant="ghost"
                     size="sm"
                     className="h-6 w-6 p-0 hover:bg-blue-100 dark:hover:bg-blue-900/30"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onTimerClick(task);
+                      handleTimerClick();
                     }}
                   >
-                    {isTimerRunning ? (
+                    {isTaskLinked && timerState === "running" ? (
+                      <Pause className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                    ) : isTimerRunning ? (
                       <Pause className="w-3 h-3 text-orange-600 dark:text-orange-400" />
                     ) : (
-                      <Play className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                      <Play className="w-3 h-3 text-green-600 dark:text-green-400" />
                     )}
                   </Button>
-                )}
+                  
+                  {/* Stop button - only show when timer is active */}
+                  {(isTaskLinked || isTimerRunning) && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 hover:bg-red-100 dark:hover:bg-red-900/30"
+                      onClick={handleStopTimer}
+                    >
+                      <Square className="w-3 h-3 text-red-600 dark:text-red-400" />
+                    </Button>
+                  )}
+                </div>
               </div>
             )}
 
@@ -311,7 +388,17 @@ export const TaskComponent: React.FC<TaskProps> = ({
         </CardContent>
 
         {/* Animated shine border for active timer */}
-        {isTimerRunning && (
+        {(isTaskLinked && timerState === "running") && (
+          <ShineBorder
+            className="absolute inset-0 rounded-[inherit]"
+            shineColor={["#3B82F6", "#60A5FA", "#93C5FD"]}
+            duration={2}
+            borderWidth={2}
+          />
+        )}
+        
+        {/* Legacy timer shine border */}
+        {isTimerRunning && !isTaskLinked && (
           <ShineBorder
             className="absolute inset-0 rounded-[inherit]"
             shineColor={["#F97316", "#FB923C", "#FDBA74"]}

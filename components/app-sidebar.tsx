@@ -1,13 +1,13 @@
 "use client";
 
-import { Calendar, Folder, Home, Kanban, Sparkles, Users } from "lucide-react";
+import { Calendar, Folder, Home, Kanban, Sparkles, Timer, Users } from "lucide-react";
 import * as React from "react";
 
-import { CreateProjectDialog } from "@/components/create-project-dialog";
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
 import { ProjectSwitcher } from "@/components/project-switcher";
+import { PomodoroTimer } from "@/components/pomodoro-timer";
 import {
   Sidebar,
   SidebarContent,
@@ -15,6 +15,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { CreateProjectDialog } from "./create-project-dialog";
 
 // Modern data structure - streamlined for professional use
 const data = {
@@ -36,6 +37,13 @@ const data = {
       url: "/kanban",
       icon: Kanban,
       items: [],
+    },
+    {
+      title: "Pomodoro Timer",
+      url: "#",
+      icon: Timer,
+      items: [],
+      action: "pomodoro",
     },
     {
       title: "Projects",
@@ -106,6 +114,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       {/* Project Creation Dialog */}
       <CreateProjectDialog />
+      
+      {/* Pomodoro Timer */}
+      <PomodoroTimer />
     </>
   );
 }
