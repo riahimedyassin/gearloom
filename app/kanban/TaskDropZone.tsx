@@ -141,18 +141,21 @@ export const TaskDropZone: React.FC<TaskDropZoneProps> = ({
           dragItem &&
           dragItem.id !== task.id && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-xs text-white font-semibold tracking-wider uppercase opacity-90 animate-pulse">
+              <div className="text-xs text-white dark:text-gray-200 font-semibold tracking-wider uppercase opacity-90 animate-pulse">
                 Drop Above
               </div>
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 dark:via-gray-400/20 to-transparent animate-shimmer"></div>
             </div>
           )}
       </div>
 
       {/* The actual task */}
-      <div ref={taskRef} className="relative z-10 transition-transform duration-200 hover:scale-[1.01]">
-        <TaskComponent 
-          task={task} 
+      <div
+        ref={taskRef}
+        className="relative z-10 transition-transform duration-200 hover:scale-[1.01]"
+      >
+        <TaskComponent
+          task={task}
           onClick={() => onTaskClick(task)}
           onDelete={onTaskDelete}
           onDuplicate={onTaskDuplicate}
@@ -163,16 +166,19 @@ export const TaskDropZone: React.FC<TaskDropZoneProps> = ({
       </div>
 
       {/* Drop zone below task */}
-      <div style={getDropZoneStyle("bottom")} className="relative overflow-hidden">
+      <div
+        style={getDropZoneStyle("bottom")}
+        className="relative overflow-hidden"
+      >
         {isOver &&
           dragPosition === "bottom" &&
           dragItem &&
           dragItem.id !== task.id && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-xs text-white font-semibold tracking-wider uppercase opacity-90 animate-pulse">
+              <div className="text-xs text-white dark:text-gray-200 font-semibold tracking-wider uppercase opacity-90 animate-pulse">
                 Drop Below
               </div>
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 dark:via-gray-400/20 to-transparent animate-shimmer"></div>
             </div>
           )}
       </div>

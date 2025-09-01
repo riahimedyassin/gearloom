@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { ChevronsUpDown, Plus } from "lucide-react"
+import { ChevronsUpDown, Plus } from "lucide-react";
+import * as React from "react";
 
 import {
   DropdownMenu,
@@ -11,28 +11,28 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 export function TeamSwitcher({
   teams,
 }: {
   teams: {
-    name: string
-    logo: React.ElementType
-    plan: string
-  }[]
+    name: string;
+    logo: React.ElementType;
+    plan: string;
+  }[];
 }) {
-  const { isMobile } = useSidebar()
-  const [activeTeam, setActiveTeam] = React.useState(teams[0])
+  const { isMobile } = useSidebar();
+  const [activeTeam, setActiveTeam] = React.useState(teams[0]);
 
   if (!activeTeam) {
-    return null
+    return null;
   }
 
   return (
@@ -50,15 +50,19 @@ export function TeamSwitcher({
                 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:mx-auto
               "
             >
-              <div className="
+              <div
+                className="
                 bg-primary text-primary-foreground flex aspect-square size-8 
                 items-center justify-center rounded-lg
                 group-data-[collapsible=icon]:size-6
-              ">
+              "
+              >
                 <activeTeam.logo className="size-4 group-data-[collapsible=icon]:size-3.5" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                <span className="truncate font-medium text-foreground">{activeTeam.name}</span>
+                <span className="truncate font-medium text-foreground">
+                  {activeTeam.name}
+                </span>
                 <span className="truncate text-xs text-muted-foreground">
                   {activeTeam.plan} Plan
                 </span>
@@ -86,10 +90,16 @@ export function TeamSwitcher({
                   <team.logo className="size-3 text-primary" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-medium text-foreground text-sm">{team.name}</span>
-                  <span className="text-xs text-muted-foreground">{team.plan} Plan</span>
+                  <span className="font-medium text-foreground text-sm">
+                    {team.name}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {team.plan} Plan
+                  </span>
                 </div>
-                <DropdownMenuShortcut className="text-muted-foreground">⌘{index + 1}</DropdownMenuShortcut>
+                <DropdownMenuShortcut className="text-muted-foreground">
+                  ⌘{index + 1}
+                </DropdownMenuShortcut>
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
@@ -98,13 +108,17 @@ export function TeamSwitcher({
                 <Plus className="size-3 text-muted-foreground" />
               </div>
               <div className="flex flex-col">
-                <span className="font-medium text-foreground text-sm">Create Team</span>
-                <span className="text-xs text-muted-foreground">Start a new workspace</span>
+                <span className="font-medium text-foreground text-sm">
+                  Create Team
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  Start a new workspace
+                </span>
               </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

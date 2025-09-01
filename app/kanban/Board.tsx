@@ -1,10 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Plus, X } from "lucide-react";
-import React, { useState, useRef } from "react";
+import { Plus } from "lucide-react";
+import React, { useRef, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import ColumnComponent from "./Column";
@@ -210,13 +209,13 @@ export const Board: React.FC<BoardProps> = ({
                 {/* Add Column Button or Input */}
                 <div className="w-72 flex-shrink-0">
                   {isCreatingColumn ? (
-                    <div className="bg-gray-100 border border-gray-300 rounded p-3">
+                    <div className="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded p-3">
                       <Input
                         type="text"
                         value={newColumnName}
                         onChange={(e) => setNewColumnName(e.target.value)}
                         placeholder="Enter list name..."
-                        className="mb-2 text-sm bg-white border-gray-300 focus:ring-1 focus:ring-blue-400"
+                        className="mb-2 text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-1 focus:ring-blue-400 dark:focus:ring-blue-500"
                         autoFocus
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
@@ -230,7 +229,7 @@ export const Board: React.FC<BoardProps> = ({
                         <Button
                           onClick={handleCreateColumn}
                           size="sm"
-                          className="bg-blue-600 hover:bg-blue-700 h-7 px-3 text-xs"
+                          className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 h-7 px-3 text-xs"
                         >
                           Add
                         </Button>
@@ -238,7 +237,7 @@ export const Board: React.FC<BoardProps> = ({
                           onClick={handleCancelCreateColumn}
                           variant="ghost"
                           size="sm"
-                          className="text-gray-600 hover:text-gray-800 h-7 px-3 text-xs"
+                          className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 h-7 px-3 text-xs"
                         >
                           Cancel
                         </Button>
@@ -248,7 +247,7 @@ export const Board: React.FC<BoardProps> = ({
                     <Button
                       onClick={() => setIsCreatingColumn(true)}
                       variant="ghost"
-                      className="w-full h-16 border-2 border-dashed border-gray-300 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-700 transition-colors rounded text-sm"
+                      className="w-full h-16 border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800/50 hover:bg-gray-200 dark:hover:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 transition-colors rounded text-sm"
                     >
                       <Plus className="w-4 h-4 mr-2" />
                       Add another list

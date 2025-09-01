@@ -4,8 +4,8 @@ import {
   Folder,
   Forward,
   MoreHorizontal,
-  Trash2,
   Plus,
+  Trash2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -53,10 +53,12 @@ export function NavProjects({
               "
             >
               <a href={item.url} className="flex items-center">
-                <div className="
+                <div
+                  className="
                   flex h-5 w-5 items-center justify-center rounded-md 
                   bg-primary/15 mr-3
-                ">
+                "
+                >
                   <item.icon className="h-3 w-3 text-primary" />
                 </div>
                 <span className="text-sm truncate">{item.name}</span>
@@ -64,7 +66,7 @@ export function NavProjects({
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuAction 
+                <SidebarMenuAction
                   showOnHover
                   className="
                     opacity-0 group-hover:opacity-100 transition-opacity duration-150
@@ -98,7 +100,7 @@ export function NavProjects({
           </SidebarMenuItem>
         ))}
         <SidebarMenuItem>
-          <SidebarMenuButton 
+          <SidebarMenuButton
             className="
               h-9 rounded-lg text-muted-foreground transition-colors duration-150
               hover:bg-accent hover:text-foreground

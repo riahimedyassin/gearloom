@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -12,17 +11,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  Bell,
-  CheckCircle2,
-  Clock,
-  User,
-  Calendar,
-  AlertTriangle,
-  Trash2,
-} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNotificationStore } from "@/stores";
+import { AlertTriangle, Bell, CheckCircle2, Clock, Trash2 } from "lucide-react";
+import React from "react";
 
 interface NotificationCenterProps {
   children: React.ReactNode;
@@ -36,21 +28,25 @@ export function NotificationCenter({ children }: NotificationCenterProps) {
     markAllAsRead,
     deleteNotification,
   } = useNotificationStore();
-  
-  const getNotificationIcon = (type: 'info' | 'warning' | 'success' | 'error') => {
+
+  const getNotificationIcon = (
+    type: "info" | "warning" | "success" | "error"
+  ) => {
     switch (type) {
-      case 'success': return <CheckCircle2 className="h-4 w-4 text-green-500" />;
-      case 'warning': return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
-      case 'error': return <AlertTriangle className="h-4 w-4 text-red-500" />;
-      default: return <Bell className="h-4 w-4 text-blue-500" />;
+      case "success":
+        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+      case "warning":
+        return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
+      case "error":
+        return <AlertTriangle className="h-4 w-4 text-red-500" />;
+      default:
+        return <Bell className="h-4 w-4 text-blue-500" />;
     }
   };
 
   return (
     <Sheet>
-      <SheetTrigger asChild>
-        {children}
-      </SheetTrigger>
+      <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent className="w-96 p-0">
         <div className="flex flex-col h-full">
           <SheetHeader className="p-6 pb-4">
@@ -64,9 +60,9 @@ export function NotificationCenter({ children }: NotificationCenterProps) {
                 )}
               </div>
               {unreadCount > 0 && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={markAllAsRead}
                   className="text-xs"
                 >
@@ -78,9 +74,9 @@ export function NotificationCenter({ children }: NotificationCenterProps) {
               Stay updated with your latest activities
             </SheetDescription>
           </SheetHeader>
-          
+
           <Separator />
-          
+
           <div className="flex-1 overflow-y-auto">
             <div className="p-4 space-y-1">
               {notifications.length === 0 ? (
@@ -106,14 +102,16 @@ export function NotificationCenter({ children }: NotificationCenterProps) {
                       <div className="flex-shrink-0 mt-0.5">
                         {getNotificationIcon(notification.type)}
                       </div>
-                      
+
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1">
-                            <p className={cn(
-                              "text-sm font-medium leading-tight",
-                              !notification.read && "font-semibold"
-                            )}>
+                            <p
+                              className={cn(
+                                "text-sm font-medium leading-tight",
+                                !notification.read && "font-semibold"
+                              )}
+                            >
                               {notification.title}
                             </p>
                             <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
@@ -125,13 +123,16 @@ export function NotificationCenter({ children }: NotificationCenterProps) {
                                 {notification.time}
                               </div>
                               {!notification.read && (
-                                <Badge variant="secondary" className="h-4 px-1.5 text-xs">
+                                <Badge
+                                  variant="secondary"
+                                  className="h-4 px-1.5 text-xs"
+                                >
                                   New
                                 </Badge>
                               )}
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             {!notification.read && (
                               <Button
@@ -146,7 +147,9 @@ export function NotificationCenter({ children }: NotificationCenterProps) {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => deleteNotification(notification.id)}
+                              onClick={() =>
+                                deleteNotification(notification.id)
+                              }
                               className="h-6 w-6 p-0 text-destructive hover:text-destructive"
                             >
                               <Trash2 className="h-3 w-3" />
@@ -155,7 +158,7 @@ export function NotificationCenter({ children }: NotificationCenterProps) {
                         </div>
                       </div>
                     </div>
-                    
+
                     {!notification.read && (
                       <div className="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-primary rounded-full" />
                     )}
@@ -164,7 +167,7 @@ export function NotificationCenter({ children }: NotificationCenterProps) {
               )}
             </div>
           </div>
-          
+
           {notifications.length > 0 && (
             <>
               <Separator />

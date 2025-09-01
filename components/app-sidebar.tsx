@@ -1,23 +1,13 @@
 "use client";
 
+import { Calendar, Folder, Home, Kanban, Sparkles, Users } from "lucide-react";
 import * as React from "react";
-import {
-  Home,
-  Kanban,
-  Users,
-  Settings,
-  Calendar,
-  BarChart3,
-  Folder,
-  Search,
-  Bell,
-  Sparkles,
-} from "lucide-react";
 
+import { CreateProjectDialog } from "@/components/create-project-dialog";
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
-import { TeamSwitcher } from "@/components/team-switcher";
+import { ProjectSwitcher } from "@/components/project-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -33,18 +23,6 @@ const data = {
     email: "alex@gearloom.com",
     avatar: "/avatars/user.jpg",
   },
-  teams: [
-    {
-      name: "GearLoom",
-      logo: Sparkles,
-      plan: "Pro",
-    },
-    {
-      name: "Design Team",
-      logo: Folder,
-      plan: "Team",
-    },
-  ],
   navMain: [
     {
       title: "Dashboard",
@@ -98,7 +76,7 @@ const data = {
     },
     {
       name: "Website Redesign",
-      url: "/workspaces/2", 
+      url: "/workspaces/2",
       icon: Calendar,
     },
   ],
@@ -106,23 +84,28 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar 
-      collapsible="icon" 
-      {...props} 
-      variant="floating"
-      className="border-r-0 group"
-    >
-      <SidebarHeader className="bg-background/95 border-b border-border/50 px-3 py-3 group-data-[collapsible=icon]:px-2">
-        <TeamSwitcher teams={data.teams} />
-      </SidebarHeader>
-      <SidebarContent className="bg-background/95 px-3 py-2 group-data-[collapsible=icon]:px-2">
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-      </SidebarContent>
-      <SidebarFooter className="bg-background/95 border-t border-border/50 px-3 py-3 group-data-[collapsible=icon]:px-2">
-        <NavUser user={data.user} />
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
+    <>
+      <Sidebar
+        collapsible="icon"
+        {...props}
+        variant="floating"
+        className="border-r-0 group"
+      >
+        <SidebarHeader className="bg-background/95 border-b border-border/50 px-3 py-3 group-data-[collapsible=icon]:px-2">
+          <ProjectSwitcher />
+        </SidebarHeader>
+        <SidebarContent className="bg-background/95 px-3 py-2 group-data-[collapsible=icon]:px-2">
+          <NavMain items={data.navMain} />
+          <NavProjects projects={data.projects} />
+        </SidebarContent>
+        <SidebarFooter className="bg-background/95 border-t border-border/50 px-3 py-3 group-data-[collapsible=icon]:px-2">
+          <NavUser user={data.user} />
+        </SidebarFooter>
+        <SidebarRail />
+      </Sidebar>
+
+      {/* Project Creation Dialog */}
+      <CreateProjectDialog />
+    </>
   );
 }

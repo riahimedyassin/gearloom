@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -16,22 +15,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { 
-  CheckCircle, 
-  Clock, 
-  Search,
-  ChevronDown,
-  Timer as TimerIcon
-} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePomodoroStore } from "@/stores";
+import { CheckCircle, ChevronDown, Timer as TimerIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 // Mock task data - in a real app, this would come from your task management system
 interface Task {
   id: number;
   title: string;
   description: string;
-  priority: 'low' | 'medium' | 'high';
+  priority: "low" | "medium" | "high";
   columnId: number;
   projectId: number;
   columnName?: string;
@@ -55,37 +49,37 @@ export function TaskSelector({ onTaskSelect, className }: TaskSelectorProps) {
         id: 1,
         title: "Implement user authentication",
         description: "Add login and registration functionality",
-        priority: 'high',
+        priority: "high",
         columnId: 1,
         projectId: 1,
-        columnName: "In Progress"
+        columnName: "In Progress",
       },
       {
         id: 2,
         title: "Design dashboard mockups",
         description: "Create wireframes for the main dashboard",
-        priority: 'medium',
+        priority: "medium",
         columnId: 1,
         projectId: 1,
-        columnName: "Todo"
+        columnName: "Todo",
       },
       {
         id: 3,
         title: "Setup CI/CD pipeline",
         description: "Configure automated testing and deployment",
-        priority: 'medium',
+        priority: "medium",
         columnId: 2,
         projectId: 1,
-        columnName: "In Progress"
+        columnName: "In Progress",
       },
       {
         id: 4,
         title: "Write API documentation",
         description: "Document all REST endpoints",
-        priority: 'low',
+        priority: "low",
         columnId: 3,
         projectId: 1,
-        columnName: "Review"
+        columnName: "Review",
       },
     ]);
   }, []);
@@ -96,9 +90,9 @@ export function TaskSelector({ onTaskSelect, className }: TaskSelectorProps) {
       title: task.title,
       description: task.description,
       columnId: task.columnId,
-      projectId: task.projectId
+      projectId: task.projectId,
     };
-    
+
     setLinkedTask(linkedTaskData);
     onTaskSelect?.(task);
     setOpen(false);
@@ -111,10 +105,14 @@ export function TaskSelector({ onTaskSelect, className }: TaskSelectorProps) {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-500';
-      case 'medium': return 'bg-yellow-500';
-      case 'low': return 'bg-green-500';
-      default: return 'bg-gray-500';
+      case "high":
+        return "bg-red-500";
+      case "medium":
+        return "bg-yellow-500";
+      case "low":
+        return "bg-green-500";
+      default:
+        return "bg-gray-500";
     }
   };
 
@@ -136,7 +134,9 @@ export function TaskSelector({ onTaskSelect, className }: TaskSelectorProps) {
               {linkedTask ? (
                 <span className="truncate">{linkedTask.title}</span>
               ) : (
-                <span className="text-muted-foreground">Select task for Pomodoro</span>
+                <span className="text-muted-foreground">
+                  Select task for Pomodoro
+                </span>
               )}
             </div>
             <ChevronDown className="h-4 w-4 flex-shrink-0 opacity-50" />
@@ -144,10 +144,7 @@ export function TaskSelector({ onTaskSelect, className }: TaskSelectorProps) {
         </PopoverTrigger>
         <PopoverContent className="w-[400px] p-0" align="start">
           <Command>
-            <CommandInput 
-              placeholder="Search tasks..." 
-              className="h-9"
-            />
+            <CommandInput placeholder="Search tasks..." className="h-9" />
             <CommandList>
               <CommandEmpty>No tasks found.</CommandEmpty>
               <CommandGroup>
@@ -167,7 +164,7 @@ export function TaskSelector({ onTaskSelect, className }: TaskSelectorProps) {
                     className="flex items-start gap-3 p-3"
                   >
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <div 
+                      <div
                         className={cn(
                           "w-2 h-2 rounded-full flex-shrink-0",
                           getPriorityColor(task.priority)
@@ -184,9 +181,12 @@ export function TaskSelector({ onTaskSelect, className }: TaskSelectorProps) {
                           <Badge variant="secondary" className="text-xs">
                             {task.columnName}
                           </Badge>
-                          <Badge 
-                            variant="outline" 
-                            className={cn("text-xs", getPriorityColor(task.priority))}
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              "text-xs",
+                              getPriorityColor(task.priority)
+                            )}
                           >
                             {task.priority}
                           </Badge>
@@ -203,7 +203,7 @@ export function TaskSelector({ onTaskSelect, className }: TaskSelectorProps) {
           </Command>
         </PopoverContent>
       </Popover>
-      
+
       {linkedTask && (
         <Button
           variant="ghost"

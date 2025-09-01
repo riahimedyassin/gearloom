@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface UIState {
   // Modal states
@@ -7,49 +7,49 @@ interface UIState {
   pomodoroModalOpen: boolean;
   createTaskModalOpen: boolean;
   createProjectModalOpen: boolean;
-  
+
   // Search
   searchQuery: string;
   searchResults: any[];
   isSearching: boolean;
-  
+
   // Theme
   isDarkMode: boolean;
-  
+
   // Sidebar
   sidebarCollapsed: boolean;
-  
+
   // Workspace
   currentWorkspaceName: string;
-  
+
   // Actions - Modals
   openCommandPalette: () => void;
   closeCommandPalette: () => void;
   toggleCommandPalette: () => void;
-  
+
   openPomodoroModal: () => void;
   closePomodoroModal: () => void;
-  
+
   openCreateTaskModal: () => void;
   closeCreateTaskModal: () => void;
-  
+
   openCreateProjectModal: () => void;
   closeCreateProjectModal: () => void;
-  
+
   // Actions - Search
   setSearchQuery: (query: string) => void;
   setSearchResults: (results: any[]) => void;
   setIsSearching: (searching: boolean) => void;
   clearSearch: () => void;
-  
+
   // Actions - Theme
   toggleTheme: () => void;
   setDarkMode: (dark: boolean) => void;
-  
+
   // Actions - Sidebar
   toggleSidebar: () => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
-  
+
   // Actions - Workspace
   setCurrentWorkspaceName: (name: string) => void;
 }
@@ -62,87 +62,72 @@ export const useUIStore = create<UIState>()(
       pomodoroModalOpen: false,
       createTaskModalOpen: false,
       createProjectModalOpen: false,
-      
+
       // Initial state - Search
-      searchQuery: '',
+      searchQuery: "",
       searchResults: [],
       isSearching: false,
-      
+
       // Initial state - Theme
       isDarkMode: false,
-      
+
       // Initial state - Sidebar
       sidebarCollapsed: false,
-      
+
       // Initial state - Workspace
-      currentWorkspaceName: 'My Workspace',
-      
+      currentWorkspaceName: "My Workspace",
+
       // Modal actions
       openCommandPalette: () => set({ commandPaletteOpen: true }),
       closeCommandPalette: () => set({ commandPaletteOpen: false }),
-      toggleCommandPalette: () => set((state) => ({ 
-        commandPaletteOpen: !state.commandPaletteOpen 
-      })),
-      
+      toggleCommandPalette: () =>
+        set((state) => ({
+          commandPaletteOpen: !state.commandPaletteOpen,
+        })),
+
       openPomodoroModal: () => set({ pomodoroModalOpen: true }),
       closePomodoroModal: () => set({ pomodoroModalOpen: false }),
-      
+
       openCreateTaskModal: () => set({ createTaskModalOpen: true }),
       closeCreateTaskModal: () => set({ createTaskModalOpen: false }),
-      
+
       openCreateProjectModal: () => set({ createProjectModalOpen: true }),
       closeCreateProjectModal: () => set({ createProjectModalOpen: false }),
-      
+
       // Search actions
       setSearchQuery: (query) => set({ searchQuery: query }),
       setSearchResults: (results) => set({ searchResults: results }),
       setIsSearching: (searching) => set({ isSearching: searching }),
-      clearSearch: () => set({ 
-        searchQuery: '', 
-        searchResults: [], 
-        isSearching: false 
-      }),
-      
+      clearSearch: () =>
+        set({
+          searchQuery: "",
+          searchResults: [],
+          isSearching: false,
+        }),
+
       // Theme actions
       toggleTheme: () => {
         const newDarkMode = !get().isDarkMode;
         set({ isDarkMode: newDarkMode });
-        
-        // Update DOM
-        if (typeof document !== 'undefined') {
-          if (newDarkMode) {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
-        }
       },
-      
+
       setDarkMode: (dark) => {
         set({ isDarkMode: dark });
-        
-        // Update DOM
-        if (typeof document !== 'undefined') {
-          if (dark) {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
-        }
       },
-      
+
       // Sidebar actions
-      toggleSidebar: () => set((state) => ({ 
-        sidebarCollapsed: !state.sidebarCollapsed 
-      })),
-      
+      toggleSidebar: () =>
+        set((state) => ({
+          sidebarCollapsed: !state.sidebarCollapsed,
+        })),
+
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
-      
+
       // Workspace actions
       setCurrentWorkspaceName: (name) => set({ currentWorkspaceName: name }),
     }),
     {
-      name: 'ui-storage',
+      name: "ui-storage",
       // Don't persist modal states, only persistent UI preferences
       partialize: (state) => ({
         isDarkMode: state.isDarkMode,
@@ -152,14 +137,3 @@ export const useUIStore = create<UIState>()(
     }
   )
 );
-
-// Initialize theme on hydration
-if (typeof window !== 'undefined') {
-  // Apply initial theme from store
-  const initialState = useUIStore.getState();
-  if (initialState.isDarkMode) {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
-}
