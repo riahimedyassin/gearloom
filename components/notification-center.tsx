@@ -2,15 +2,12 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useNotificationStore } from "@/stores";
 import { AlertTriangle, Bell, CheckCircle2, Clock, Trash2 } from "lucide-react";
@@ -45,16 +42,17 @@ export function NotificationCenter({ children }: NotificationCenterProps) {
   };
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent className="w-96 p-0">
-        <div className="flex flex-col h-full">
-          <SheetHeader className="p-6 pb-4">
-            <div className="flex items-center justify-between">
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
+      <DropdownMenuContent className="w-80 p-0" align="end" sideOffset={4}>
+        <div className="flex flex-col max-h-96">
+          {/* Header */}
+          <div className="p-4 pb-3 border-b">
+            <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <SheetTitle>Notifications</SheetTitle>
+                <h3 className="font-semibold text-sm">Notifications</h3>
                 {unreadCount > 0 && (
-                  <Badge variant="secondary" className="h-5 px-2">
+                  <Badge variant="secondary" className="h-5 px-2 text-xs">
                     {unreadCount}
                   </Badge>
                 )}
@@ -64,24 +62,23 @@ export function NotificationCenter({ children }: NotificationCenterProps) {
                   variant="ghost"
                   size="sm"
                   onClick={markAllAsRead}
-                  className="text-xs"
+                  className="text-xs h-6 px-2"
                 >
                   Mark all read
                 </Button>
               )}
             </div>
-            <SheetDescription>
+            <p className="text-xs text-muted-foreground">
               Stay updated with your latest activities
-            </SheetDescription>
-          </SheetHeader>
+            </p>
+          </div>
 
-          <Separator />
-
-          <div className="flex-1 overflow-y-auto">
-            <div className="p-4 space-y-1">
+          {/* Notifications List */}
+          <div className="flex-1 overflow-y-auto max-h-72">
+            <div className="p-2">
               {notifications.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <Bell className="h-8 w-8 text-muted-foreground/50 mb-4" />
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <Bell className="h-6 w-6 text-muted-foreground/50 mb-3" />
                   <p className="text-sm text-muted-foreground">
                     No notifications yet
                   </p>
@@ -90,96 +87,115 @@ export function NotificationCenter({ children }: NotificationCenterProps) {
                   </p>
                 </div>
               ) : (
-                notifications.map((notification) => (
-                  <div
-                    key={notification.id}
-                    className={cn(
-                      "relative p-3 rounded-lg border transition-colors hover:bg-muted/50 group",
-                      !notification.read && "bg-muted/30 border-primary/20"
-                    )}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 mt-0.5">
-                        {getNotificationIcon(notification.type)}
-                      </div>
+                <div className="space-y-1">
+                  {notifications.slice(0, 5).map((notification) => (
+                    <div
+                      key={notification.id}
+                      className={cn(
+                        "relative p-3 rounded-md hover:bg-muted/50 group transition-colors",
+                        !notification.read && "bg-muted/30"
+                      )}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 mt-0.5">
+                          {getNotificationIcon(notification.type)}
+                        </div>
 
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1">
-                            <p
-                              className={cn(
-                                "text-sm font-medium leading-tight",
-                                !notification.read && "font-semibold"
-                              )}
-                            >
-                              {notification.title}
-                            </p>
-                            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                              {notification.description}
-                            </p>
-                            <div className="flex items-center gap-2 mt-2">
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <Clock className="h-3 w-3" />
-                                {notification.time}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1">
+                              <p
+                                className={cn(
+                                  "text-sm font-medium leading-tight",
+                                  !notification.read && "font-semibold"
+                                )}
+                              >
+                                {notification.title}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1 leading-relaxed line-clamp-2">
+                                {notification.description}
+                              </p>
+                              <div className="flex items-center gap-2 mt-2">
+                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <Clock className="h-3 w-3" />
+                                  {notification.time}
+                                </div>
+                                {!notification.read && (
+                                  <Badge
+                                    variant="secondary"
+                                    className="h-4 px-1.5 text-xs"
+                                  >
+                                    New
+                                  </Badge>
+                                )}
                               </div>
-                              {!notification.read && (
-                                <Badge
-                                  variant="secondary"
-                                  className="h-4 px-1.5 text-xs"
-                                >
-                                  New
-                                </Badge>
-                              )}
                             </div>
-                          </div>
 
-                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            {!notification.read && (
+                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              {!notification.read && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    markAsRead(notification.id);
+                                  }}
+                                  className="h-6 w-6 p-0"
+                                >
+                                  <CheckCircle2 className="h-3 w-3" />
+                                </Button>
+                              )}
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => markAsRead(notification.id)}
-                                className="h-6 w-6 p-0"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteNotification(notification.id);
+                                }}
+                                className="h-6 w-6 p-0 text-destructive hover:text-destructive"
                               >
-                                <CheckCircle2 className="h-3 w-3" />
+                                <Trash2 className="h-3 w-3" />
                               </Button>
-                            )}
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() =>
-                                deleteNotification(notification.id)
-                              }
-                              className="h-6 w-6 p-0 text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                    {!notification.read && (
-                      <div className="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-primary rounded-full" />
-                    )}
-                  </div>
-                ))
+                      {!notification.read && (
+                        <div className="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-primary rounded-full" />
+                      )}
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           </div>
 
+          {/* Footer */}
           {notifications.length > 0 && (
             <>
               <Separator />
-              <div className="p-4">
-                <Button variant="outline" className="w-full" size="sm">
+              <div className="p-3">
+                <Button
+                  variant="outline"
+                  className="w-full h-8 text-xs"
+                  size="sm"
+                >
                   View All Notifications
+                  {notifications.length > 5 && (
+                    <Badge
+                      variant="secondary"
+                      className="ml-2 h-4 px-1.5 text-xs"
+                    >
+                      +{notifications.length - 5}
+                    </Badge>
+                  )}
                 </Button>
               </div>
             </>
           )}
         </div>
-      </SheetContent>
-    </Sheet>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

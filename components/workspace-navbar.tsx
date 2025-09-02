@@ -113,7 +113,7 @@ export function WorkspaceNavbar({
             </TooltipContent>
           </Tooltip>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <h1 className="text-lg font-semibold text-foreground truncate">
               {currentWorkspaceName}
             </h1>

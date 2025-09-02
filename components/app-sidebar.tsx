@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Folder, Home, Kanban, Sparkles, Timer, Users } from "lucide-react";
+import { Calendar, Folder, Home, Kanban, Sparkles, Users } from "lucide-react";
 import * as React from "react";
 
 import { NavMain } from "@/components/nav-main";
@@ -37,13 +37,6 @@ const data = {
       url: "/kanban",
       icon: Kanban,
       items: [],
-    },
-    {
-      title: "Pomodoro Timer",
-      url: "#",
-      icon: Timer,
-      items: [],
-      action: "pomodoro",
     },
     {
       title: "Projects",

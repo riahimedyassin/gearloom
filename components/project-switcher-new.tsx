@@ -116,7 +116,11 @@ export function ProjectSwitcher() {
                 <div className="grid flex-1">
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{project.name}</span>
-                    <span className={`text-xs ${getPriorityColor(project.priority)}`}>
+                    <span
+                      className={`text-xs ${getPriorityColor(
+                        project.priority
+                      )}`}
+                    >
                       {project.priority}
                     </span>
                   </div>
@@ -128,11 +132,16 @@ export function ProjectSwitcher() {
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2" onClick={openCreateProjectModal}>
+            <DropdownMenuItem
+              className="gap-2 p-2"
+              onClick={openCreateProjectModal}
+            >
               <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                 <Plus className="size-4" />
               </div>
-              <div className="font-medium text-muted-foreground">Add project</div>
+              <div className="font-medium text-muted-foreground">
+                Add project
+              </div>
               <DropdownMenuShortcut>⌘+</DropdownMenuShortcut>
             </DropdownMenuItem>
           </DropdownMenuContent>
