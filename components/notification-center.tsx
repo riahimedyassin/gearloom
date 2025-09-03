@@ -10,7 +10,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useNotificationStore } from "@/stores";
-import { AlertTriangle, Bell, CheckCircle2, Clock, Trash2 } from "lucide-react";
+import { AlertTriangle, Bell, CheckCircle2, Clock, Trash2, FolderOpen } from "lucide-react";
 import React from "react";
 
 interface NotificationCenterProps {
@@ -104,14 +104,25 @@ export function NotificationCenter({ children }: NotificationCenterProps) {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1">
-                              <p
-                                className={cn(
-                                  "text-sm font-medium leading-tight",
-                                  !notification.read && "font-semibold"
+                              <div className="flex items-center gap-2 mb-1">
+                                <p
+                                  className={cn(
+                                    "text-sm font-medium leading-tight",
+                                    !notification.read && "font-semibold"
+                                  )}
+                                >
+                                  {notification.title}
+                                </p>
+                                {notification.projectName && (
+                                  <Badge
+                                    variant="outline"
+                                    className="h-5 px-2 text-xs flex items-center gap-1"
+                                  >
+                                    <FolderOpen className="h-3 w-3" />
+                                    {notification.projectName}
+                                  </Badge>
                                 )}
-                              >
-                                {notification.title}
-                              </p>
+                              </div>
                               <p className="text-xs text-muted-foreground mt-1 leading-relaxed line-clamp-2">
                                 {notification.description}
                               </p>

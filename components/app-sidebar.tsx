@@ -1,10 +1,9 @@
 "use client";
 
-import { Calendar, Folder, Home, Kanban, Sparkles, Users } from "lucide-react";
+import { Calendar, Folder, Home, Kanban, Users, Bell, BarChart3, Timer, Settings } from "lucide-react";
 import * as React from "react";
 
 import { NavMain } from "@/components/nav-main";
-import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
 import { ProjectSwitcher } from "@/components/project-switcher";
 import { PomodoroTimer } from "@/components/pomodoro-timer";
@@ -69,16 +68,39 @@ const data = {
       ],
     },
   ],
-  projects: [
+  contextualSections: [
     {
-      name: "Product Launch",
-      url: "/workspaces/1",
-      icon: Sparkles,
+      title: "Analytics & Reports",
+      url: "/analytics",
+      icon: BarChart3,
+      items: [
+        { title: "Progress Overview", url: "/analytics/progress" },
+        { title: "Time Tracking", url: "/analytics/time" },
+        { title: "Productivity Metrics", url: "/analytics/productivity" },
+        { title: "Goal Achievement", url: "/analytics/goals" },
+      ],
     },
     {
-      name: "Website Redesign",
-      url: "/workspaces/2",
-      icon: Calendar,
+      title: "Productivity Tools",
+      url: "/tools",
+      icon: Timer,
+      items: [
+        { title: "Pomodoro Sessions", url: "/tools/pomodoro" },
+        { title: "Focus Mode", url: "/tools/focus" },
+        { title: "Time Blocks", url: "/tools/time-blocks" },
+        { title: "Break Reminders", url: "/tools/breaks" },
+      ],
+    },
+    {
+      title: "Notifications",
+      url: "/notifications",
+      icon: Bell,
+      items: [
+        { title: "Task Reminders", url: "/notifications/tasks" },
+        { title: "Deadline Alerts", url: "/notifications/deadlines" },
+        { title: "Team Updates", url: "/notifications/team" },
+        { title: "Settings", url: "/notifications/settings" },
+      ],
     },
   ],
 };
@@ -97,7 +119,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarHeader>
         <SidebarContent className="bg-background/95 px-3 py-2 group-data-[collapsible=icon]:px-2">
           <NavMain items={data.navMain} />
-          <NavProjects projects={data.projects} />
+          <NavMain items={data.contextualSections} />
         </SidebarContent>
         <SidebarFooter className="bg-background/95 border-t border-border/50 px-3 py-3 group-data-[collapsible=icon]:px-2">
           <NavUser user={data.user} />

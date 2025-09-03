@@ -1,12 +1,12 @@
 "use client";
 
-import { ProjectTypeSidebar } from "@/components/project-type-sidebar";
-import { WorkspaceNavbar } from "@/components/workspace-navbar";
 import { FloatingPomodoroButton } from "@/components/floating-pomodoro-button";
+import { ProjectTypeSidebar } from "@/components/project-type-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { useNotificationStore } from "@/stores";
+import { WorkspaceNavbar } from "@/components/workspace-navbar";
 import { ProjectProvider } from "@/contexts/project-context";
 import { TaskProvider } from "@/contexts/task-context";
+import { useNotificationStore } from "@/stores";
 
 function WorkspaceLayoutContent({ children }: { children: React.ReactNode }) {
   const { addNotification } = useNotificationStore();
@@ -45,7 +45,7 @@ function WorkspaceLayoutContent({ children }: { children: React.ReactNode }) {
           <div className="h-full p-6">{children}</div>
         </div>
       </SidebarInset>
-      
+
       <FloatingPomodoroButton />
     </SidebarProvider>
   );

@@ -8,98 +8,280 @@ datasource db {
 }
 
 model User {
-  id            Int          @id @default(autoincrement())
-  firstname     String
-  lastname      String
-  email         String       @unique
-  password      String
-  createdTasks  Task[]
-  assignedTasks Task[]       @relation("AssignedTasks")
-  projects      Project[]
+  id        Int      @id @default(autoincrement())
+  firstname String
+  lastname  String
+  email     String   @unique
+  password  String
+  avatar    String?
+  role      UserRole @default(MEMBER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Project relationships
+  ownedProjects  Project[]       @relation("ProjectOwner")
+  projectMembers ProjectMember[]
+
+  // Task relationships
+  createdTasks  Task[] @relation("TaskCreator")
+  assignedTasks Task[] @relation("TaskAssignee")
+
+  // Other relationships
   comments      Comment[]
   pomorounds    Pomorounds[]
+  notifications Notification[]
+  sessions      PomodoroSession[]
+  attachments   TaskAttachment[]  @relation("AttachmentUploader")
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  OWNER
+  MEMBER
+  VIEWER
 }
 
 enum ProjectType {
-  learning
-  custom
+  web_development
+  mobile_app
+  desktop_app
+  api_backend
+  data_science
+  machine_learning
+  research
+  marketing
+  design
+  business
+  education
+  personal
   startup
+  learning
+  custom // Keep existing value for backward compatibility
+  other
 }
 
-// todo : refine the model for better context generation for llm
+enum ProjectCategory {
+  startup
+  enterprise
+  personal
+  freelance
+  open_source
+  academic
+  non_profit
+}
+
+enum ProjectPriority {
+  low
+  medium
+  high
+  critical
+}
+
+enum ProjectStatus {
+  planning
+  active
+  on_hold
+  completed
+  archived
+}
+
 model Project {
-  id          Int         @id @default(autoincrement())
+  id          Int             @id @default(autoincrement())
   name        String
   description String
   type        ProjectType
-  ownerId     Int
-  owner       User        @relation(fields: [ownerId], references: [id])
-  tasks       Task[]
+  category    ProjectCategory
+  priority    ProjectPriority @default(medium)
+  status      ProjectStatus   @default(planning)
+
+  // Enhanced fields for LLM context
+  targetAudience String?
+  timeline       String?
+  budget         String?
+  context        String? // Additional context for LLM
+
+  // JSON fields for complex data
+  goals      Json? // Array of strings
+  challenges Json? // Array of strings
+  resources  Json? // Object with tools, references, etc.
+  techStack  Json? // Array of technologies
+  keywords   Json? // Array of keywords
+  milestones Json? // Array of milestone objects
+
+  // Timestamps
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  startDate DateTime?
+  endDate   DateTime?
+
+  // Relationships
+  ownerId       Int
+  owner         User            @relation("ProjectOwner", fields: [ownerId], references: [id])
+  members       ProjectMember[]
+  tasks         Task[]
+  columns       Column[]
+  labels        Label[]
+  notifications Notification[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@index([type])
+  @@map("projects")
+}
+
+enum MemberRole {
+  ADMIN
+  MANAGER
+  MEMBER
+  VIEWER
+}
+
+model ProjectMember {
+  id       Int        @id @default(autoincrement())
+  role     MemberRole @default(MEMBER)
+  joinedAt DateTime   @default(now())
+
+  // Relationships
+  projectId Int
+  userId    Int
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@map("project_members")
 }
 
 model Column {
   id     Int     @id @default(autoincrement())
   name   String
   isDone Boolean @default(false)
-  tasks  Task[]
+  order  Int     @default(0)
+  color  String? // Optional color for column
+
+  // Relationships
+  projectId Int
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks     Task[]
+
+  @@index([projectId])
+  @@map("columns")
 }
 
 enum TaskPriority {
   low
-  high
   medium
+  high
+  critical
+}
+
+enum TaskStatus {
+  todo
+  in_progress
+  in_review
+  done
+  blocked
 }
 
 model Task {
-  id           Int              @id @default(autoincrement())
-  title        String
-  description  String
-  priority     TaskPriority
-  order        Int              @default(0)
-  createdAt    DateTime         @default(now())
-  createdById  Int
-  createdBy    User             @relation(fields: [createdById], references: [id])
-  assignedToId Int
-  assignedTo   User             @relation("AssignedTasks", fields: [assignedToId], references: [id])
-  subTasks     SubTask[]
-  pomorounds   Pomorounds[]
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String       @default("")
+  priority    TaskPriority @default(medium)
+  status      TaskStatus   @default(todo)
+  order       Int          @default(0)
+
+  // Time estimates (in minutes)
+  estimatedTime Int?
+  actualTime    Int? @default(0)
+
+  // Dates
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  dueDate     DateTime?
+  startDate   DateTime?
+  completedAt DateTime?
+
+  // Relationships
   projectId    Int
-  project      Project          @relation(fields: [projectId], references: [id])
-  taskLabels   TaskLabel[]
   columnId     Int
-  column       Column           @relation(fields: [columnId], references: [id])
-  comments     Comment[]
-  attachments  TaskAttachment[]
-  updatedAt    DateTime         @updatedAt
+  createdById  Int
+  assignedToId Int?
+
+  project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  column     Column  @relation(fields: [columnId], references: [id])
+  createdBy  User    @relation("TaskCreator", fields: [createdById], references: [id])
+  assignedTo User?   @relation("TaskAssignee", fields: [assignedToId], references: [id])
+
+  // Child relationships
+  subTasks    SubTask[]
+  comments    Comment[]
+  attachments TaskAttachment[]
+  labels      TaskLabel[]
+  pomorounds  Pomorounds[]
+  steps       TaskStep[]
+  sessions    PomodoroSession[]
 
   @@index([projectId])
+  @@index([columnId])
   @@index([assignedToId])
   @@index([createdById])
   @@index([createdAt])
-  @@index([columnId])
+  @@index([dueDate])
+  @@map("tasks")
 }
 
 model SubTask {
   id          Int          @id @default(autoincrement())
   title       String
-  description String
-  priority    TaskPriority
+  description String       @default("")
+  priority    TaskPriority @default(medium)
+  completed   Boolean      @default(false)
+  order       Int          @default(0)
   createdAt   DateTime     @default(now())
-  taskId      Int
-  task        Task         @relation(fields: [taskId], references: [id], onDelete: Cascade)
   updatedAt   DateTime     @updatedAt
+
+  // Relationships
+  taskId Int
+  task   Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@map("sub_tasks")
 }
 
-// potential compilation for notification management etc.
-model Comment {
+model TaskStep {
   id          Int      @id @default(autoincrement())
-  content     Json // storing the Tiptap editor content. 
+  title       String
+  description String   @default("")
+  completed   Boolean  @default(false)
+  order       Int      @default(0)
   createdAt   DateTime @default(now())
-  createdById Int
-  createdBy   User     @relation(fields: [createdById], references: [id])
-  taskId      Int
-  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   updatedAt   DateTime @updatedAt
+
+  // Relationships
+  taskId Int
+  task   Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@map("task_steps")
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   Json // Tiptap editor content
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  taskId      Int
+  createdById Int
+  task        Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  createdBy   User @relation(fields: [createdById], references: [id])
+
+  @@index([taskId])
+  @@index([createdById])
+  @@map("comments")
 }
 
 enum AttachmentType {
@@ -107,40 +289,159 @@ enum AttachmentType {
   video
   link
   document
+  file
 }
 
 model TaskAttachment {
-  id     Int            @id @default(autoincrement())
-  type   AttachmentType
-  link   String
-  taskId Int
-  task   Task           @relation(references: [id], fields: [taskId])
+  id           Int            @id @default(autoincrement())
+  type         AttachmentType
+  filename     String
+  originalName String?
+  url          String
+  size         Int? // File size in bytes
+  mimeType     String?
+  createdAt    DateTime       @default(now())
+
+  // Relationships
+  taskId       Int
+  uploadedById Int
+  task         Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  uploadedBy   User @relation("AttachmentUploader", fields: [uploadedById], references: [id])
+
+  @@index([taskId])
+  @@map("task_attachments")
 }
 
+// Pomodoro Models
+model PomodoroSettings {
+  id                     Int @id @default(autoincrement())
+  focusDuration          Int @default(25) // minutes
+  shortBreakDuration     Int @default(5) // minutes
+  longBreakDuration      Int @default(15) // minutes
+  sessionsUntilLongBreak Int @default(4)
+
+  // Relationships
+  userId   Int               @unique
+  sessions PomodoroSession[]
+
+  @@map("pomodoro_settings")
+}
+
+enum SessionType {
+  FOCUS
+  SHORT_BREAK
+  LONG_BREAK
+}
+
+enum SessionStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  PAUSED
+  CANCELLED
+}
+
+model PomodoroSession {
+  id          Int           @id @default(autoincrement())
+  type        SessionType
+  status      SessionStatus @default(PENDING)
+  duration    Int // Planned duration in minutes
+  actualTime  Int? // Actual time spent in minutes
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime      @default(now())
+
+  // Relationships
+  userId     Int
+  taskId     Int?
+  settingsId Int?
+  user       User              @relation(fields: [userId], references: [id])
+  task       Task?             @relation(fields: [taskId], references: [id])
+  settings   PomodoroSettings? @relation(fields: [settingsId], references: [id])
+
+  @@index([userId])
+  @@index([taskId])
+  @@map("pomodoro_sessions")
+}
+
+// Legacy Pomorounds model (keeping for backward compatibility)
 model Pomorounds {
   id          Int      @id @default(autoincrement())
   rounds      Int
   longBreaks  Int
   shortBreaks Int
-  userId      Int
-  taskId      Int
-  task        Task     @relation(fields: [taskId], references: [id])
-  user        User     @relation(fields: [userId], references: [id])
   updatedAt   DateTime @updatedAt
+
+  // Relationships
+  userId Int
+  taskId Int
+  task   Task @relation(fields: [taskId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
+
+  @@map("pomorounds")
 }
 
 model Label {
-  id         Int         @id @default(autoincrement())
-  name       String      @unique
+  id        Int      @id @default(autoincrement())
+  name      String
+  color     String   @default("#3B82F6") // Default blue color
+  createdAt DateTime @default(now())
+
+  // Relationships
+  projectId  Int
+  project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
   taskLabels TaskLabel[]
+
+  @@unique([name, projectId]) // Unique within project
+  @@index([projectId])
+  @@map("labels")
 }
 
 model TaskLabel {
-  id      Int   @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+
+  // Relationships
   taskId  Int
   labelId Int
   task    Task  @relation(fields: [taskId], references: [id], onDelete: Cascade)
   label   Label @relation(fields: [labelId], references: [id], onDelete: Cascade)
 
-  @@unique([taskId, labelId]) // Prevent duplicate relationships
+  @@unique([taskId, labelId])
+  @@map("task_labels")
+}
+
+enum NotificationType {
+  TASK_ASSIGNED
+  TASK_UPDATED
+  TASK_COMPLETED
+  TASK_DUE_SOON
+  PROJECT_UPDATED
+  MEMBER_ADDED
+  COMMENT_ADDED
+  POMODORO_COMPLETED
+  SYSTEM_ANNOUNCEMENT
+}
+
+model Notification {
+  id        Int              @id @default(autoincrement())
+  type      NotificationType
+  title     String
+  message   String
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  // Optional metadata
+  metadata Json? // Additional data like task ID, project ID, etc.
+
+  // Relationships
+  userId    Int
+  projectId Int?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([projectId])
+  @@index([read])
+  @@index([createdAt])
+  @@map("notifications")
 }

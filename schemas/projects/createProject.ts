@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Project creation form schema
+// Project creation form schema - Updated to match Prisma schema
 export const createProjectSchema = z.object({
   // Step 1: Basic Information
   name: z
@@ -14,59 +14,65 @@ export const createProjectSchema = z.object({
 
   // Step 2: Project Context for LLM
   type: z.enum([
-    "web-development",
-    "mobile-app",
-    "desktop-app",
-    "api-backend",
-    "data-science",
-    "machine-learning",
+    "web_development",
+    "mobile_app",
+    "desktop_app", 
+    "api_backend",
+    "data_science",
+    "machine_learning",
     "research",
     "marketing",
     "design",
     "business",
     "education",
     "personal",
+    "startup",
+    "learning",
+    "custom",
     "other",
   ]),
 
   category: z.enum([
     "startup",
-    "enterprise",
+    "enterprise", 
     "personal",
     "freelance",
-    "open-source",
+    "open_source",
     "academic",
-    "non-profit",
+    "non_profit",
   ]),
+
+  priority: z.enum(["low", "medium", "high", "critical"]),
 
   targetAudience: z
     .string()
     .min(5, "Target audience description is required")
-    .max(200, "Target audience must be less than 200 characters"),
+    .max(200, "Target audience must be less than 200 characters")
+    .optional(),
 
-  technologies: z
+  techStack: z
     .array(z.string())
-    .min(1, "Please select at least one technology"),
+    .min(1, "Please select at least one technology")
+    .optional(),
 
   keywords: z
     .array(z.string())
     .min(2, "Please add at least 2 keywords")
-    .max(10, "Maximum 10 keywords allowed"),
+    .max(10, "Maximum 10 keywords allowed")
+    .optional(),
 
   timeline: z.enum([
     "1-week",
-    "2-4-weeks",
+    "2-4-weeks", 
     "1-3-months",
     "3-6-months",
     "6-12-months",
     "1-year+",
-  ]),
+  ]).optional(),
 
-  teamSize: z.enum(["solo", "2-3", "4-6", "7-10", "11-20", "20+"]),
+  teamSize: z.enum(["solo", "2-3", "4-6", "7-10", "11-20", "20+"]).optional(),
 
-  priority: z.enum(["low", "medium", "high", "critical"]),
-
-  goals: z.array(z.string()).min(1, "Please add at least one project goal"),
+  goals: z.array(z.string()).min(1, "Please add at least one project goal").optional(),
 
   challenges: z.array(z.string()).optional(),
 
@@ -80,10 +86,21 @@ export const createProjectSchema = z.object({
     })
     .optional(),
 
+  milestones: z.array(z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    dueDate: z.string().optional(),
+    completed: z.boolean().optional(),
+  })).optional(),
+
   context: z
     .string()
     .max(1000, "Additional context must be less than 1000 characters")
     .optional(),
+
+  // Date fields
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
 });
 
 export type CreateProjectFormData = z.infer<typeof createProjectSchema>;

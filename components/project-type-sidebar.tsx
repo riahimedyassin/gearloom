@@ -1,8 +1,9 @@
 "use client";
 
 import {
+  BarChart3,
+  Bell,
   BookOpen,
-  Brain,
   Briefcase,
   Calendar,
   CheckCircle,
@@ -22,6 +23,7 @@ import {
   Rocket,
   Server,
   Target,
+  Timer,
   TrendingUp,
   Trophy,
   Users,
@@ -29,7 +31,6 @@ import {
 import * as React from "react";
 
 import { NavMain } from "@/components/nav-main";
-import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
 import { PomodoroTimer } from "@/components/pomodoro-timer";
 import { ProjectSwitcher } from "@/components/project-switcher";
@@ -474,82 +475,122 @@ const getNavigationByProjectType = (projectType: ProjectType) => {
   }
 };
 
-const getProjectsByType = (projectType: ProjectType) => {
-  // This would normally come from your API/database
-  // For now, returning mock data based on project type
-  const baseProjects = [
+const getContextualSections = (
+  projectType: ProjectType,
+  currentProject: any
+) => {
+  // Universal productivity sections that work for all project types
+  const universalSections = [
     {
-      name: "Current Project",
-      url: "/workspaces/current",
-      icon: Folder,
+      title: "Team & Collaboration",
+      url: "/team",
+      icon: Users,
+      items: [
+        { title: "Team Members", url: "/team/members" },
+        { title: "Assignments", url: "/team/assignments" },
+        { title: "Communication", url: "/team/chat" },
+        { title: "Meeting Notes", url: "/team/meetings" },
+      ],
+    },
+    {
+      title: "Analytics & Reports",
+      url: "/analytics",
+      icon: BarChart3,
+      items: [
+        { title: "Progress Overview", url: "/analytics/progress" },
+        { title: "Time Tracking", url: "/analytics/time" },
+        { title: "Productivity Metrics", url: "/analytics/productivity" },
+        { title: "Goal Achievement", url: "/analytics/goals" },
+      ],
+    },
+    {
+      title: "Productivity Tools",
+      url: "/tools",
+      icon: Timer,
+      items: [
+        { title: "Pomodoro Sessions", url: "/tools/pomodoro" },
+        { title: "Focus Mode", url: "/tools/focus" },
+        { title: "Time Blocks", url: "/tools/time-blocks" },
+        { title: "Break Reminders", url: "/tools/breaks" },
+      ],
     },
   ];
 
-  if (projectType === "startup") {
-    return [
-      ...baseProjects,
-      {
-        name: "Market Research",
-        url: "/startup/market-research",
-        icon: TrendingUp,
-      },
-      {
-        name: "Competitor Analysis",
-        url: "/startup/competitors",
-        icon: Target,
-      },
-    ];
-  }
+  // Add project-specific sections based on type
+  const projectSpecificSections = [];
 
-  if (projectType === "learning") {
-    return [
-      ...baseProjects,
-      {
-        name: "Frontend Mastery",
-        url: "/learning/frontend",
-        icon: Code,
-      },
-      {
-        name: "Algorithm Studies",
-        url: "/learning/algorithms",
-        icon: Brain,
-      },
-    ];
+  if (projectType === "startup") {
+    projectSpecificSections.push({
+      title: "Startup Resources",
+      url: "/startup/resources",
+      icon: Rocket,
+      items: [
+        { title: "Investor Deck", url: "/startup/pitch-deck" },
+        { title: "Market Research", url: "/startup/market-research" },
+        { title: "Competitor Analysis", url: "/startup/competitors" },
+        { title: "Legal Documents", url: "/startup/legal" },
+      ],
+    });
   }
 
   if (projectType === "web-development") {
-    return [
-      ...baseProjects,
-      {
-        name: "E-commerce Platform",
-        url: "/web-dev/ecommerce",
-        icon: Globe,
-      },
-      {
-        name: "API Service",
-        url: "/web-dev/api-service",
-        icon: Server,
-      },
-    ];
+    projectSpecificSections.push({
+      title: "Development Tools",
+      url: "/dev/tools",
+      icon: Code,
+      items: [
+        { title: "Code Repository", url: "/dev/repo" },
+        { title: "Deployment", url: "/dev/deploy" },
+        { title: "Bug Tracking", url: "/dev/bugs" },
+        { title: "Documentation", url: "/dev/docs" },
+      ],
+    });
+  }
+
+  if (projectType === "learning") {
+    projectSpecificSections.push({
+      title: "Learning Resources",
+      url: "/learning/resources",
+      icon: BookOpen,
+      items: [
+        { title: "Study Materials", url: "/learning/materials" },
+        { title: "Progress Tracking", url: "/learning/progress" },
+        { title: "Achievements", url: "/learning/achievements" },
+        { title: "Study Schedule", url: "/learning/schedule" },
+      ],
+    });
   }
 
   if (projectType === "mobile-app") {
-    return [
-      ...baseProjects,
-      {
-        name: "Social Media App",
-        url: "/mobile/social-app",
-        icon: MessageSquare,
-      },
-      {
-        name: "Fitness Tracker",
-        url: "/mobile/fitness-tracker",
-        icon: Target,
-      },
-    ];
+    projectSpecificSections.push({
+      title: "App Development",
+      url: "/mobile/tools",
+      icon: Monitor,
+      items: [
+        { title: "Design System", url: "/mobile/design-system" },
+        { title: "Testing", url: "/mobile/testing" },
+        { title: "App Store", url: "/mobile/store" },
+        { title: "Analytics", url: "/mobile/analytics" },
+      ],
+    });
   }
 
-  return baseProjects;
+  // Always add notifications at the end
+  const systemSections = [
+    {
+      title: "Notifications",
+      url: "/notifications",
+      icon: Bell,
+      items: [
+        { title: "Task Reminders", url: "/notifications/tasks" },
+        { title: "Deadline Alerts", url: "/notifications/deadlines" },
+        { title: "Team Updates", url: "/notifications/team" },
+        { title: "Settings", url: "/notifications/settings" },
+      ],
+    },
+  ];
+
+  return [...universalSections, ...projectSpecificSections, ...systemSections];
 };
 
 const userData = {
@@ -562,7 +603,7 @@ export function ProjectTypeSidebar({ ...props }: ProjectTypeSidebarProps) {
   const { currentProject } = useProject();
   const projectType = getCurrentProjectType(currentProject);
   const navigation = getNavigationByProjectType(projectType);
-  const projects = getProjectsByType(projectType);
+  const contextualSections = getContextualSections(projectType, currentProject);
 
   return (
     <>
@@ -577,7 +618,7 @@ export function ProjectTypeSidebar({ ...props }: ProjectTypeSidebarProps) {
         </SidebarHeader>
         <SidebarContent className="bg-background/95 px-3 py-2 group-data-[collapsible=icon]:px-2">
           <NavMain items={navigation} />
-          <NavProjects projects={projects} />
+          <NavMain items={contextualSections} />
         </SidebarContent>
         <SidebarFooter className="bg-background/95 border-t border-border/50 px-3 py-3 group-data-[collapsible=icon]:px-2">
           <NavUser user={userData} />

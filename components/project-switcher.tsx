@@ -59,7 +59,7 @@ export function ProjectSwitcher() {
   const router = useRouter();
 
   const handleCreateProject = () => {
-    router.push("/create-workspace");
+    router.push("/workspaces/create");
   };
 
   if (!currentProject) {

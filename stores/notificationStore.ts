@@ -10,6 +10,9 @@ export interface Notification {
   read: boolean;
   createdAt: Date;
   avatar?: string;
+  // Project source information
+  projectId?: string;
+  projectName?: string;
 }
 
 interface NotificationState {
@@ -19,6 +22,14 @@ interface NotificationState {
   // Actions
   addNotification: (
     notification: Omit<Notification, "id" | "createdAt">
+  ) => void;
+  addProjectNotification: (
+    notification: Omit<
+      Notification,
+      "id" | "createdAt" | "projectId" | "projectName"
+    >,
+    projectId: string,
+    projectName: string
   ) => void;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
@@ -39,6 +50,8 @@ const defaultNotifications: Notification[] = [
     type: "info",
     read: false,
     createdAt: new Date(Date.now() - 2 * 60 * 1000),
+    projectId: "1",
+    projectName: "Website Redesign",
   },
   {
     id: "2",
@@ -48,6 +61,8 @@ const defaultNotifications: Notification[] = [
     type: "warning",
     read: false,
     createdAt: new Date(Date.now() - 60 * 60 * 1000),
+    projectId: "1",
+    projectName: "Website Redesign",
   },
   {
     id: "3",
@@ -57,6 +72,8 @@ const defaultNotifications: Notification[] = [
     type: "success",
     read: true,
     createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
+    projectId: "2",
+    projectName: "Mobile App Development",
   },
   {
     id: "4",
@@ -66,6 +83,8 @@ const defaultNotifications: Notification[] = [
     type: "info",
     read: false,
     createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+    projectId: "3",
+    projectName: "Startup Launch",
   },
 ];
 
@@ -80,6 +99,21 @@ export const useNotificationStore = create<NotificationState>()(
           ...notificationData,
           id: Date.now().toString(),
           createdAt: new Date(),
+        };
+
+        set((state) => ({
+          notifications: [notification, ...state.notifications],
+          unreadCount: state.unreadCount + 1,
+        }));
+      },
+
+      addProjectNotification: (notificationData, projectId, projectName) => {
+        const notification: Notification = {
+          ...notificationData,
+          id: Date.now().toString(),
+          createdAt: new Date(),
+          projectId,
+          projectName,
         };
 
         set((state) => ({

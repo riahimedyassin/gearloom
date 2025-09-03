@@ -1,8 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Board from "../../kanban/Board";
-import { Column, NewColumnForm, NewTaskForm, Task } from "../../kanban/types";
+import Board from "../../../kanban/Board";
+import {
+  Column,
+  NewColumnForm,
+  NewTaskForm,
+  Task,
+} from "../../../kanban/types";
 
 // Mock data - replace with actual data from your API
 const mockColumns: Column[] = [
