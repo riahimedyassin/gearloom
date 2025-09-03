@@ -2,6 +2,7 @@
 
 import { ChevronsUpDown, Plus } from "lucide-react";
 import * as React from "react";
+import { useRouter } from "next/navigation";
 
 import {
   DropdownMenu,
@@ -18,7 +19,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useUIStore } from "@/stores";
 import { useProject, Project } from "@/contexts/project-context";
 
 const getProjectIcon = (type: Project["type"]) => {
@@ -55,14 +55,19 @@ const getPriorityColor = (priority: Project["priority"]) => {
 
 export function ProjectSwitcher() {
   const { isMobile } = useSidebar();
-  const { openCreateProjectModal } = useUIStore();
   const { currentProject, setCurrentProject, projects } = useProject();
+  const router = useRouter();
+
+  const handleCreateProject = () => {
+    router.push("/create-workspace");
+  };
 
   if (!currentProject) {
     return null;
   }
 
   const handleProjectSwitch = (project: Project) => {
+    console.log("Switching from", currentProject?.name, "to", project.name);
     setCurrentProject(project);
   };
 
@@ -128,7 +133,7 @@ export function ProjectSwitcher() {
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2" onClick={openCreateProjectModal}>
+            <DropdownMenuItem className="gap-2 p-2" onClick={handleCreateProject}>
               <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                 <Plus className="size-4" />
               </div>

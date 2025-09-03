@@ -6,6 +6,7 @@ import { FloatingPomodoroButton } from "@/components/floating-pomodoro-button";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useNotificationStore } from "@/stores";
 import { ProjectProvider } from "@/contexts/project-context";
+import { TaskProvider } from "@/contexts/task-context";
 
 function WorkspaceLayoutContent({ children }: { children: React.ReactNode }) {
   const { addNotification } = useNotificationStore();
@@ -53,7 +54,9 @@ function WorkspaceLayoutContent({ children }: { children: React.ReactNode }) {
 export default function layout({ children }: { children: React.ReactNode }) {
   return (
     <ProjectProvider>
-      <WorkspaceLayoutContent>{children}</WorkspaceLayoutContent>
+      <TaskProvider>
+        <WorkspaceLayoutContent>{children}</WorkspaceLayoutContent>
+      </TaskProvider>
     </ProjectProvider>
   );
 }

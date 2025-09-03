@@ -1,20 +1,17 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import {
-    Dialog,
-    DialogContent,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { X, Save } from "lucide-react";
-import React, { useState, useEffect } from "react";
-import { Task } from "./types";
-import SubtasksManager from "./components/SubtasksManager";
-import CommentsManager from "./components/CommentsManager";
-import TaskSidebar from "./components/TaskSidebar";
+import { Textarea } from "@/components/ui/textarea";
+import { Save, X } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import AttachmentsManager from "./components/AttachmentsManager";
+import CommentsManager from "./components/CommentsManager";
 import StepsManager from "./components/StepsManager";
+import SubtasksManager from "./components/SubtasksManager";
+import TaskSidebar from "./components/TaskSidebar";
+import { Task } from "./types";
 
 interface TaskModalProps {
   task: Task;
@@ -69,7 +66,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                 autoFocus
               />
             ) : (
-              <h1 
+              <h1
                 className="text-2xl font-semibold text-gray-900 cursor-pointer hover:text-gray-700 transition-colors"
                 onClick={() => setIsEditingTitle(true)}
               >
@@ -97,12 +94,17 @@ export const TaskModal: React.FC<TaskModalProps> = ({
           <div className="flex-1 p-6 pr-4 overflow-y-auto">
             {/* Description */}
             <div className="mb-6">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Description</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-2">
+                Description
+              </h3>
               {isEditingDescription ? (
                 <Textarea
                   value={editedTask.description}
                   onChange={(e) =>
-                    setEditedTask({ ...editedTask, description: e.target.value })
+                    setEditedTask({
+                      ...editedTask,
+                      description: e.target.value,
+                    })
                   }
                   onBlur={() => setIsEditingDescription(false)}
                   className="min-h-[100px] text-sm resize-none"
@@ -122,26 +124,46 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             {/* Tabs for additional content */}
             <Tabs defaultValue="details" className="w-full">
               <TabsList className="grid w-full grid-cols-4 mb-4">
-                <TabsTrigger value="details" className="text-xs">Details</TabsTrigger>
-                <TabsTrigger value="attachments" className="text-xs">Resources</TabsTrigger>
-                <TabsTrigger value="steps" className="text-xs">Steps</TabsTrigger>
-                <TabsTrigger value="comments" className="text-xs">Activity</TabsTrigger>
+                <TabsTrigger value="details" className="text-xs">
+                  Details
+                </TabsTrigger>
+                <TabsTrigger value="attachments" className="text-xs">
+                  Resources
+                </TabsTrigger>
+                <TabsTrigger value="steps" className="text-xs">
+                  Steps
+                </TabsTrigger>
+                <TabsTrigger value="comments" className="text-xs">
+                  Activity
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="details" className="space-y-4 mt-0">
-                <SubtasksManager task={editedTask} onTaskUpdate={handleTaskUpdate} />
+                <SubtasksManager
+                  task={editedTask}
+                  onTaskUpdate={handleTaskUpdate}
+                />
               </TabsContent>
 
               <TabsContent value="attachments" className="mt-0">
-                <AttachmentsManager task={editedTask} onTaskUpdate={handleTaskUpdate} />
+                <AttachmentsManager
+                  task={editedTask}
+                  onTaskUpdate={handleTaskUpdate}
+                />
               </TabsContent>
 
               <TabsContent value="steps" className="mt-0">
-                <StepsManager task={editedTask} onTaskUpdate={handleTaskUpdate} />
+                <StepsManager
+                  task={editedTask}
+                  onTaskUpdate={handleTaskUpdate}
+                />
               </TabsContent>
 
               <TabsContent value="comments" className="mt-0">
-                <CommentsManager task={editedTask} onTaskUpdate={handleTaskUpdate} />
+                <CommentsManager
+                  task={editedTask}
+                  onTaskUpdate={handleTaskUpdate}
+                />
               </TabsContent>
             </Tabs>
           </div>

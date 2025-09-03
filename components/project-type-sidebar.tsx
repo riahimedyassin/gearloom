@@ -45,7 +45,6 @@ import {
   ProjectType,
   useProject,
 } from "@/contexts/project-context";
-import { CreateProjectDialog } from "./create-project-dialog";
 
 interface ProjectTypeSidebarProps
   extends React.ComponentProps<typeof Sidebar> {}
@@ -61,7 +60,7 @@ const startupNavigation = [
   },
   {
     title: "Kanban Board",
-    url: "/kanban",
+    url: "/workspaces/kanban",
     icon: Kanban,
     items: [],
   },
@@ -155,7 +154,7 @@ const learningNavigation = [
   },
   {
     title: "Kanban Board",
-    url: "/kanban",
+    url: "/workspaces/kanban",
     icon: Kanban,
     items: [],
   },
@@ -249,7 +248,7 @@ const webDevelopmentNavigation = [
   },
   {
     title: "Kanban Board",
-    url: "/kanban",
+    url: "/workspaces/kanban",
     icon: Kanban,
     items: [],
   },
@@ -332,7 +331,7 @@ const mobileAppNavigation = [
   },
   {
     title: "Kanban Board",
-    url: "/kanban",
+    url: "/workspaces/kanban",
     icon: Kanban,
     items: [],
   },
@@ -410,13 +409,13 @@ const defaultNavigation = [
     title: "Dashboard",
     url: "/dashboard",
     icon: Home,
-    isActive: true,
     items: [],
   },
   {
     title: "Kanban Board",
-    url: "/kanban",
+    url: "/workspaces/kanban",
     icon: Kanban,
+    isActive: true,
     items: [],
   },
   {
@@ -585,9 +584,6 @@ export function ProjectTypeSidebar({ ...props }: ProjectTypeSidebarProps) {
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>
-
-      {/* Project Creation Dialog */}
-      <CreateProjectDialog />
 
       {/* Pomodoro Timer */}
       <PomodoroTimer />

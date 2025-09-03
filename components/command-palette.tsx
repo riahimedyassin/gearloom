@@ -118,7 +118,7 @@ export function CommandPalette({
           </CommandItem>
           <CommandItem
             onSelect={() =>
-              runCommand(() => (window.location.href = "/kanban"))
+              runCommand(() => (window.location.href = "/workspaces/kanban"))
             }
           >
             <CheckSquare className="mr-2 h-4 w-4" />

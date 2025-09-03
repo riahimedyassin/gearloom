@@ -1,4 +1,6 @@
 import { ThemeProvider } from "@/components/theme-provider";
+import { ProjectProvider } from "@/contexts/project-context";
+import { TaskProvider } from "@/contexts/task-context";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -28,7 +30,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <ProjectProvider>
+            <TaskProvider>
+              {children}
+            </TaskProvider>
+          </ProjectProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

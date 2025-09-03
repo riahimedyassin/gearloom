@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { NewTaskForm } from './types';
+import React, { useState } from "react";
+import { NewTaskForm } from "./types";
 
 interface CreateTaskModalProps {
   isOpen: boolean;
@@ -19,16 +19,16 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   onCreateTask,
 }) => {
   const [formData, setFormData] = useState<NewTaskForm>({
-    title: '',
-    description: '',
-    priority: 'medium',
+    title: "",
+    description: "",
+    priority: "medium",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.title.trim()) {
       onCreateTask(columnId, formData);
-      setFormData({ title: '', description: '', priority: 'medium' });
+      setFormData({ title: "", description: "", priority: "medium" });
       onClose();
     }
   };
@@ -42,7 +42,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       onClick={handleBackdropClick}
     >
@@ -58,7 +58,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             ×
           </button>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -67,33 +67,42 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             <input
               type="text"
               value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter task title..."
               required
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Description
             </label>
             <textarea
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter task description..."
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Priority
             </label>
             <select
               value={formData.priority}
-              onChange={(e) => setFormData({ ...formData, priority: e.target.value as 'low' | 'medium' | 'high' })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  priority: e.target.value as "low" | "medium" | "high",
+                })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="low">Low</option>
@@ -101,7 +110,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
               <option value="high">High</option>
             </select>
           </div>
-          
+
           <div className="flex justify-end space-x-3 mt-6">
             <button
               type="button"

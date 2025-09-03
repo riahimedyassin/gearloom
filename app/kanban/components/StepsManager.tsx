@@ -2,12 +2,34 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { ListOrdered, Plus, X, ChevronUp, ChevronDown, CheckCircle2, Link, ExternalLink, File, Edit, Save } from "lucide-react";
+import {
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Edit,
+  ExternalLink,
+  File,
+  Link,
+  ListOrdered,
+  Plus,
+  Save,
+  X,
+} from "lucide-react";
 import React, { useState } from "react";
 import { Step, Task } from "../types";
 
@@ -41,14 +63,17 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
         title: newStep.title.trim(),
         description: newStep.description.trim() || undefined,
         completed: false,
-        linkedResourceIds: newStep.linkedResourceIds.length > 0 ? newStep.linkedResourceIds : undefined,
+        linkedResourceIds:
+          newStep.linkedResourceIds.length > 0
+            ? newStep.linkedResourceIds
+            : undefined,
       };
-      
+
       onTaskUpdate({
         ...task,
         steps: [...(task.steps || []), step],
       });
-      
+
       setNewStep({ title: "", description: "", linkedResourceIds: [] });
       setIsAddingStep(false);
     }
@@ -61,7 +86,7 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
       ...step,
       order: index + 1,
     }));
-    
+
     onTaskUpdate({
       ...task,
       steps: reorderedSteps,
@@ -72,31 +97,34 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
     const updatedSteps = task.steps?.map((step) =>
       step.id === stepId ? { ...step, completed } : step
     );
-    
+
     onTaskUpdate({
       ...task,
       steps: updatedSteps,
     });
   };
 
-  const handleMoveStep = (stepId: number, direction: 'up' | 'down') => {
+  const handleMoveStep = (stepId: number, direction: "up" | "down") => {
     if (!task.steps) return;
-    
-    const currentIndex = task.steps.findIndex(s => s.id === stepId);
+
+    const currentIndex = task.steps.findIndex((s) => s.id === stepId);
     if (currentIndex === -1) return;
-    
-    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+
+    const newIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
     if (newIndex < 0 || newIndex >= task.steps.length) return;
-    
+
     const updatedSteps = [...task.steps];
-    [updatedSteps[currentIndex], updatedSteps[newIndex]] = [updatedSteps[newIndex], updatedSteps[currentIndex]];
-    
+    [updatedSteps[currentIndex], updatedSteps[newIndex]] = [
+      updatedSteps[newIndex],
+      updatedSteps[currentIndex],
+    ];
+
     // Update order numbers
     const reorderedSteps = updatedSteps.map((step, index) => ({
       ...step,
       order: index + 1,
     }));
-    
+
     onTaskUpdate({
       ...task,
       steps: reorderedSteps,
@@ -111,19 +139,21 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
           // Unlink resource
           return {
             ...step,
-            linkedResourceIds: currentLinkedIds.filter(id => id !== resourceId)
+            linkedResourceIds: currentLinkedIds.filter(
+              (id) => id !== resourceId
+            ),
           };
         } else {
           // Link resource
           return {
             ...step,
-            linkedResourceIds: [...currentLinkedIds, resourceId]
+            linkedResourceIds: [...currentLinkedIds, resourceId],
           };
         }
       }
       return step;
     });
-    
+
     onTaskUpdate({
       ...task,
       steps: updatedSteps,
@@ -131,10 +161,10 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
   };
 
   const getLinkedResources = (stepId: number) => {
-    const step = task.steps?.find(s => s.id === stepId);
+    const step = task.steps?.find((s) => s.id === stepId);
     if (!step?.linkedResourceIds || !task.attachments) return [];
-    
-    return task.attachments.filter(attachment => 
+
+    return task.attachments.filter((attachment) =>
       step.linkedResourceIds?.includes(attachment.id)
     );
   };
@@ -144,12 +174,12 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
     if (currentIds.includes(resourceId)) {
       setNewStep({
         ...newStep,
-        linkedResourceIds: currentIds.filter(id => id !== resourceId)
+        linkedResourceIds: currentIds.filter((id) => id !== resourceId),
       });
     } else {
       setNewStep({
         ...newStep,
-        linkedResourceIds: [...currentIds, resourceId]
+        linkedResourceIds: [...currentIds, resourceId],
       });
     }
   };
@@ -165,22 +195,25 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
 
   const handleSaveEdit = () => {
     if (editingStep.title.trim() && editingStepId) {
-      const updatedSteps = task.steps?.map((step) => 
+      const updatedSteps = task.steps?.map((step) =>
         step.id === editingStepId
           ? {
               ...step,
               title: editingStep.title.trim(),
               description: editingStep.description.trim() || undefined,
-              linkedResourceIds: editingStep.linkedResourceIds.length > 0 ? editingStep.linkedResourceIds : undefined,
+              linkedResourceIds:
+                editingStep.linkedResourceIds.length > 0
+                  ? editingStep.linkedResourceIds
+                  : undefined,
             }
           : step
       );
-      
+
       onTaskUpdate({
         ...task,
         steps: updatedSteps,
       });
-      
+
       setEditingStepId(null);
       setEditingStep({ title: "", description: "", linkedResourceIds: [] });
     }
@@ -196,31 +229,31 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
     if (currentIds.includes(resourceId)) {
       setEditingStep({
         ...editingStep,
-        linkedResourceIds: currentIds.filter(id => id !== resourceId)
+        linkedResourceIds: currentIds.filter((id) => id !== resourceId),
       });
     } else {
       setEditingStep({
         ...editingStep,
-        linkedResourceIds: [...currentIds, resourceId]
+        linkedResourceIds: [...currentIds, resourceId],
       });
     }
   };
 
   const handleResourceBadgeClick = (resourceId: number) => {
-    const resource = task.attachments?.find(a => a.id === resourceId);
+    const resource = task.attachments?.find((a) => a.id === resourceId);
     if (resource?.url) {
-      window.open(resource.url, '_blank');
+      window.open(resource.url, "_blank");
     }
     // For files, we could implement a download or view functionality here
     // For now, we'll just log it or show a message
     else if (resource?.fileName) {
       // In a real app, you'd handle file viewing/downloading here
-      console.log('File resource clicked:', resource.fileName);
+      console.log("File resource clicked:", resource.fileName);
     }
   };
 
   const sortedSteps = task.steps?.sort((a, b) => a.order - b.order) || [];
-  const completedSteps = sortedSteps.filter(s => s.completed).length;
+  const completedSteps = sortedSteps.filter((s) => s.completed).length;
 
   return (
     <Card className="p-6">
@@ -262,34 +295,44 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
               <div
                 key={step.id}
                 className={`flex items-start gap-4 p-4 rounded-lg border group hover:bg-slate-100 transition-colors ${
-                  step.completed ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50'
+                  step.completed
+                    ? "bg-emerald-50 border-emerald-200"
+                    : "bg-slate-50"
                 }`}
               >
                 <div className="flex items-center gap-2 mt-1">
                   <input
                     type="checkbox"
                     checked={step.completed}
-                    onChange={(e) => handleToggleStep(step.id, e.target.checked)}
+                    onChange={(e) =>
+                      handleToggleStep(step.id, e.target.checked)
+                    }
                     className="accent-indigo-600 w-5 h-5"
                   />
                   <span className="text-sm font-medium text-slate-500 min-w-[20px]">
                     {step.order}.
                   </span>
                 </div>
-                
+
                 <div className="flex-1 min-w-0">
                   {editingStepId === step.id ? (
                     // Editing mode
                     <div className="space-y-3">
                       <div>
-                        <Label htmlFor={`edit-step-title-${step.id}`} className="text-sm font-medium">
+                        <Label
+                          htmlFor={`edit-step-title-${step.id}`}
+                          className="text-sm font-medium"
+                        >
                           Step Title *
                         </Label>
                         <Input
                           id={`edit-step-title-${step.id}`}
                           value={editingStep.title}
                           onChange={(e) =>
-                            setEditingStep({ ...editingStep, title: e.target.value })
+                            setEditingStep({
+                              ...editingStep,
+                              title: e.target.value,
+                            })
                           }
                           onKeyDown={(e) => {
                             if (e.key === "Enter" && editingStep.title.trim()) {
@@ -304,20 +347,26 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
                         />
                       </div>
                       <div>
-                        <Label htmlFor={`edit-step-description-${step.id}`} className="text-sm font-medium">
+                        <Label
+                          htmlFor={`edit-step-description-${step.id}`}
+                          className="text-sm font-medium"
+                        >
                           Description
                         </Label>
                         <Textarea
                           id={`edit-step-description-${step.id}`}
                           value={editingStep.description}
                           onChange={(e) =>
-                            setEditingStep({ ...editingStep, description: e.target.value })
+                            setEditingStep({
+                              ...editingStep,
+                              description: e.target.value,
+                            })
                           }
                           placeholder="Add more details (optional)..."
                           className="text-sm mt-1 min-h-[80px] resize-none"
                         />
                       </div>
-                      
+
                       {/* Resource linking for editing step */}
                       {task.attachments && task.attachments.length > 0 && (
                         <div>
@@ -328,9 +377,17 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
                             {task.attachments.map((resource) => (
                               <Badge
                                 key={resource.id}
-                                variant={editingStep.linkedResourceIds.includes(resource.id) ? "default" : "outline"}
+                                variant={
+                                  editingStep.linkedResourceIds.includes(
+                                    resource.id
+                                  )
+                                    ? "default"
+                                    : "outline"
+                                }
                                 className="text-xs px-2 py-1 cursor-pointer hover:bg-blue-100 transition-colors"
-                                onClick={() => handleToggleEditingStepResource(resource.id)}
+                                onClick={() =>
+                                  handleToggleEditingStepResource(resource.id)
+                                }
                               >
                                 {resource.file ? (
                                   <File className="w-3 h-3 mr-1" />
@@ -343,7 +400,7 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
                           </div>
                         </div>
                       )}
-                      
+
                       <div className="flex gap-2 pt-2">
                         <Button
                           onClick={handleSaveEdit}
@@ -365,32 +422,38 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
                   ) : (
                     // Display mode
                     <>
-                      <h4 className={`text-sm font-medium ${
-                        step.completed 
-                          ? 'line-through text-slate-400' 
-                          : 'text-slate-900'
-                      }`}>
+                      <h4
+                        className={`text-sm font-medium ${
+                          step.completed
+                            ? "line-through text-slate-400"
+                            : "text-slate-900"
+                        }`}
+                      >
                         {step.title}
                       </h4>
                       {step.description && (
-                        <p className={`text-sm mt-1 leading-relaxed ${
-                          step.completed 
-                            ? 'line-through text-slate-400' 
-                            : 'text-slate-600'
-                        }`}>
+                        <p
+                          className={`text-sm mt-1 leading-relaxed ${
+                            step.completed
+                              ? "line-through text-slate-400"
+                              : "text-slate-600"
+                          }`}
+                        >
                           {step.description}
                         </p>
                       )}
-                      
+
                       {/* Linked resources */}
                       {getLinkedResources(step.id).length > 0 && (
                         <div className="flex items-center gap-1 mt-2 flex-wrap">
                           {getLinkedResources(step.id).map((resource) => (
-                            <Badge 
-                              key={resource.id} 
-                              variant="outline" 
+                            <Badge
+                              key={resource.id}
+                              variant="outline"
                               className="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 border-blue-200 cursor-pointer hover:bg-blue-100 transition-colors"
-                              onClick={() => handleResourceBadgeClick(resource.id)}
+                              onClick={() =>
+                                handleResourceBadgeClick(resource.id)
+                              }
                             >
                               {resource.file ? (
                                 <File className="w-3 h-3 mr-1" />
@@ -405,7 +468,7 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
                     </>
                   )}
                 </div>
-                
+
                 <div className="flex items-center gap-1">
                   {editingStepId !== step.id && (
                     <>
@@ -420,85 +483,96 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
                             <Link className="w-4 h-4" />
                           </Button>
                         </PopoverTrigger>
-                    <PopoverContent className="w-80 p-0" align="end">
-                      <Command>
-                        <CommandInput placeholder="Search resources..." />
-                        <CommandEmpty>No resources found.</CommandEmpty>
-                        <CommandGroup heading="Available Resources">
-                          {task.attachments && task.attachments.length > 0 ? (
-                            task.attachments.map((resource) => {
-                              const isLinked = step.linkedResourceIds?.includes(resource.id) || false;
-                              return (
-                                <CommandItem
-                                  key={resource.id}
-                                  onSelect={() => handleLinkResource(step.id, resource.id)}
-                                  className="flex items-center gap-2 cursor-pointer"
-                                >
-                                  <div className="flex items-center gap-2 flex-1">
-                                    {resource.file ? (
-                                      <File className="w-4 h-4 text-gray-500" />
-                                    ) : (
-                                      <ExternalLink className="w-4 h-4 text-gray-500" />
-                                    )}
-                                    <div className="flex-1 min-w-0">
-                                      <div className="font-medium text-sm truncate">{resource.title}</div>
-                                      {resource.description && (
-                                        <div className="text-xs text-gray-500 truncate">{resource.description}</div>
+                        <PopoverContent className="w-80 p-0" align="end">
+                          <Command>
+                            <CommandInput placeholder="Search resources..." />
+                            <CommandEmpty>No resources found.</CommandEmpty>
+                            <CommandGroup heading="Available Resources">
+                              {task.attachments &&
+                              task.attachments.length > 0 ? (
+                                task.attachments.map((resource) => {
+                                  const isLinked =
+                                    step.linkedResourceIds?.includes(
+                                      resource.id
+                                    ) || false;
+                                  return (
+                                    <CommandItem
+                                      key={resource.id}
+                                      onSelect={() =>
+                                        handleLinkResource(step.id, resource.id)
+                                      }
+                                      className="flex items-center gap-2 cursor-pointer"
+                                    >
+                                      <div className="flex items-center gap-2 flex-1">
+                                        {resource.file ? (
+                                          <File className="w-4 h-4 text-gray-500" />
+                                        ) : (
+                                          <ExternalLink className="w-4 h-4 text-gray-500" />
+                                        )}
+                                        <div className="flex-1 min-w-0">
+                                          <div className="font-medium text-sm truncate">
+                                            {resource.title}
+                                          </div>
+                                          {resource.description && (
+                                            <div className="text-xs text-gray-500 truncate">
+                                              {resource.description}
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                      {isLinked && (
+                                        <CheckCircle2 className="w-4 h-4 text-blue-600" />
                                       )}
-                                    </div>
-                                  </div>
-                                  {isLinked && (
-                                    <CheckCircle2 className="w-4 h-4 text-blue-600" />
-                                  )}
-                                </CommandItem>
-                              );
-                            })
-                          ) : (
-                            <div className="p-4 text-sm text-center text-gray-500">
-                              No resources available. Add some resources first.
-                            </div>
-                          )}
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                    <Button
-                      onClick={() => handleStartEditing(step)}
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 w-8 p-0 text-slate-500 hover:text-blue-600 hover:bg-blue-50"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      onClick={() => handleMoveStep(step.id, 'up')}
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 w-8 p-0 text-slate-500 hover:text-slate-700"
-                      disabled={index === 0}
-                    >
-                      <ChevronUp className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      onClick={() => handleMoveStep(step.id, 'down')}
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 w-8 p-0 text-slate-500 hover:text-slate-700"
-                      disabled={index === sortedSteps.length - 1}
-                    >
-                      <ChevronDown className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      onClick={() => handleDeleteStep(step.id)}
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
+                                    </CommandItem>
+                                  );
+                                })
+                              ) : (
+                                <div className="p-4 text-sm text-center text-gray-500">
+                                  No resources available. Add some resources
+                                  first.
+                                </div>
+                              )}
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                        <Button
+                          onClick={() => handleStartEditing(step)}
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0 text-slate-500 hover:text-blue-600 hover:bg-blue-50"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          onClick={() => handleMoveStep(step.id, "up")}
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0 text-slate-500 hover:text-slate-700"
+                          disabled={index === 0}
+                        >
+                          <ChevronUp className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          onClick={() => handleMoveStep(step.id, "down")}
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0 text-slate-500 hover:text-slate-700"
+                          disabled={index === sortedSteps.length - 1}
+                        >
+                          <ChevronDown className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          onClick={() => handleDeleteStep(step.id)}
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </>
                   )}
                 </div>
@@ -508,7 +582,9 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
             <div className="text-center py-8 text-slate-400">
               <ListOrdered className="w-8 h-8 mx-auto mb-2 opacity-50" />
               <p className="text-sm">No steps defined</p>
-              <p className="text-xs">Break down this task into actionable steps</p>
+              <p className="text-xs">
+                Break down this task into actionable steps
+              </p>
             </div>
           )}
 
@@ -529,9 +605,12 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
                   autoFocus
                 />
               </div>
-              
+
               <div className="grid gap-2">
-                <Label htmlFor="step-description" className="text-sm font-medium">
+                <Label
+                  htmlFor="step-description"
+                  className="text-sm font-medium"
+                >
                   Description (optional)
                 </Label>
                 <Textarea
@@ -553,21 +632,27 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
                   </Label>
                   <div className="grid grid-cols-1 gap-2 max-h-32 overflow-y-auto">
                     {task.attachments.map((resource) => {
-                      const isSelected = newStep.linkedResourceIds.includes(resource.id);
+                      const isSelected = newStep.linkedResourceIds.includes(
+                        resource.id
+                      );
                       return (
                         <div
                           key={resource.id}
                           className={`flex items-center gap-2 p-2 rounded border cursor-pointer transition-colors ${
-                            isSelected 
-                              ? 'bg-blue-50 border-blue-200' 
-                              : 'bg-white border-gray-200 hover:bg-gray-50'
+                            isSelected
+                              ? "bg-blue-50 border-blue-200"
+                              : "bg-white border-gray-200 hover:bg-gray-50"
                           }`}
-                          onClick={() => handleToggleNewStepResource(resource.id)}
+                          onClick={() =>
+                            handleToggleNewStepResource(resource.id)
+                          }
                         >
                           <input
                             type="checkbox"
                             checked={isSelected}
-                            onChange={() => handleToggleNewStepResource(resource.id)}
+                            onChange={() =>
+                              handleToggleNewStepResource(resource.id)
+                            }
                             className="accent-indigo-600"
                           />
                           <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -577,9 +662,13 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
                               <ExternalLink className="w-4 h-4 text-gray-500 flex-shrink-0" />
                             )}
                             <div className="flex-1 min-w-0">
-                              <div className="text-sm font-medium truncate">{resource.title}</div>
+                              <div className="text-sm font-medium truncate">
+                                {resource.title}
+                              </div>
                               {resource.description && (
-                                <div className="text-xs text-gray-500 truncate">{resource.description}</div>
+                                <div className="text-xs text-gray-500 truncate">
+                                  {resource.description}
+                                </div>
                               )}
                             </div>
                           </div>
@@ -589,7 +678,7 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
                   </div>
                 </div>
               )}
-              
+
               <div className="flex gap-3 pt-2">
                 <Button
                   onClick={handleAddStep}
@@ -602,7 +691,11 @@ export const StepsManager: React.FC<StepsManagerProps> = ({
                 <Button
                   onClick={() => {
                     setIsAddingStep(false);
-                    setNewStep({ title: "", description: "", linkedResourceIds: [] });
+                    setNewStep({
+                      title: "",
+                      description: "",
+                      linkedResourceIds: [],
+                    });
                   }}
                   size="sm"
                   variant="ghost"

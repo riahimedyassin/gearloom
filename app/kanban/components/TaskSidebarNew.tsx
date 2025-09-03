@@ -2,8 +2,14 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertTriangle, ArrowUp, ArrowDown } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { AlertTriangle, ArrowDown, ArrowUp } from "lucide-react";
 import { Task } from "../types";
 import UserCombobox from "./UserCombobox";
 
@@ -12,7 +18,10 @@ interface TaskSidebarProps {
   onTaskUpdate?: (updatedTask: Task) => void;
 }
 
-export const TaskSidebar: React.FC<TaskSidebarProps> = ({ task, onTaskUpdate }) => {
+export const TaskSidebar: React.FC<TaskSidebarProps> = ({
+  task,
+  onTaskUpdate,
+}) => {
   const getPriorityIcon = (priority: string) => {
     switch (priority) {
       case "high":
@@ -71,7 +80,9 @@ export const TaskSidebar: React.FC<TaskSidebarProps> = ({ task, onTaskUpdate }) 
             <SelectTrigger className="w-full h-8">
               <SelectValue>
                 <div className="flex items-center gap-2">
-                  <PriorityIcon className={`w-3 h-3 ${getPriorityColor(task.priority)}`} />
+                  <PriorityIcon
+                    className={`w-3 h-3 ${getPriorityColor(task.priority)}`}
+                  />
                   <span className="text-sm capitalize">{task.priority}</span>
                 </div>
               </SelectValue>
@@ -99,8 +110,12 @@ export const TaskSidebar: React.FC<TaskSidebarProps> = ({ task, onTaskUpdate }) 
           </Select>
         ) : (
           <div className="flex items-center gap-2 p-2 bg-gray-50 rounded">
-            <PriorityIcon className={`w-4 h-4 ${getPriorityColor(task.priority)}`} />
-            <span className="text-sm capitalize text-gray-700">{task.priority}</span>
+            <PriorityIcon
+              className={`w-4 h-4 ${getPriorityColor(task.priority)}`}
+            />
+            <span className="text-sm capitalize text-gray-700">
+              {task.priority}
+            </span>
           </div>
         )}
       </div>
@@ -128,9 +143,7 @@ export const TaskSidebar: React.FC<TaskSidebarProps> = ({ task, onTaskUpdate }) 
               <p className="text-sm font-medium text-gray-900">
                 {task.assignedTo.firstname} {task.assignedTo.lastname}
               </p>
-              <p className="text-xs text-gray-500">
-                {task.assignedTo.email}
-              </p>
+              <p className="text-xs text-gray-500">{task.assignedTo.email}</p>
             </div>
           </div>
         )}
@@ -171,14 +184,19 @@ export const TaskSidebar: React.FC<TaskSidebarProps> = ({ task, onTaskUpdate }) 
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-gray-700">Subtasks</span>
               <Badge variant="outline" className="text-xs">
-                {task.subtasks.filter(s => s.done).length}/{task.subtasks.length}
+                {task.subtasks.filter((s) => s.done).length}/
+                {task.subtasks.length}
               </Badge>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
+              <div
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ 
-                  width: `${(task.subtasks.filter(s => s.done).length / task.subtasks.length) * 100}%` 
+                style={{
+                  width: `${
+                    (task.subtasks.filter((s) => s.done).length /
+                      task.subtasks.length) *
+                    100
+                  }%`,
                 }}
               ></div>
             </div>

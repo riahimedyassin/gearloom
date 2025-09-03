@@ -1,4 +1,5 @@
 "use client";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -9,7 +10,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { AlertCircle, CheckCircle2, Clock } from "lucide-react";
 import { Task } from "../types";
 
@@ -53,7 +53,9 @@ export const TaskInformation: React.FC<TaskInformationProps> = ({
   return (
     <Card className="p-6">
       <CardHeader className="px-0 pt-0">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Task Information</h3>
+        <h3 className="text-lg font-semibold text-slate-900 mb-4">
+          Task Information
+        </h3>
       </CardHeader>
       <CardContent className="px-0 pb-0 space-y-4">
         <div className="grid gap-2">
@@ -63,9 +65,7 @@ export const TaskInformation: React.FC<TaskInformationProps> = ({
           <Input
             id="title"
             value={task.title}
-            onChange={(e) =>
-              onTaskUpdate({ ...task, title: e.target.value })
-            }
+            onChange={(e) => onTaskUpdate({ ...task, title: e.target.value })}
             className="focus:ring-2 focus:ring-blue-500"
             placeholder="Enter task title..."
           />

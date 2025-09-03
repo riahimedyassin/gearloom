@@ -1,9 +1,9 @@
 "use client";
 
-import * as React from "react";
 import { Check, ChevronsUpDown, User } from "lucide-react";
+import * as React from "react";
 
-import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -18,7 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 import { User as UserType } from "../types";
 
 // Mock users list - in a real app this would come from an API
@@ -26,7 +26,12 @@ const MOCK_USERS: UserType[] = [
   { id: 1, firstname: "John", lastname: "Doe", email: "john@example.com" },
   { id: 2, firstname: "Jane", lastname: "Smith", email: "jane@example.com" },
   { id: 3, firstname: "Mike", lastname: "Johnson", email: "mike@example.com" },
-  { id: 4, firstname: "Sarah", lastname: "Williams", email: "sarah@example.com" },
+  {
+    id: 4,
+    firstname: "Sarah",
+    lastname: "Williams",
+    email: "sarah@example.com",
+  },
   { id: 5, firstname: "David", lastname: "Brown", email: "david@example.com" },
   { id: 6, firstname: "Emma", lastname: "Davis", email: "emma@example.com" },
 ];
@@ -39,12 +44,12 @@ interface UserComboboxProps {
   className?: string;
 }
 
-export function UserCombobox({ 
-  value, 
-  onSelect, 
+export function UserCombobox({
+  value,
+  onSelect,
   placeholder = "Select user...",
   allowUnassigned = false,
-  className 
+  className,
 }: UserComboboxProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -61,7 +66,8 @@ export function UserCombobox({
             <>
               <Avatar className="w-6 h-6">
                 <AvatarFallback className="bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 text-xs font-semibold">
-                  {value.firstname[0]}{value.lastname[0]}
+                  {value.firstname[0]}
+                  {value.lastname[0]}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 text-left min-w-0">
@@ -123,7 +129,8 @@ export function UserCombobox({
                 >
                   <Avatar className="w-6 h-6">
                     <AvatarFallback className="bg-gradient-to-br from-slate-100 to-slate-200 text-slate-700 text-xs font-semibold">
-                      {user.firstname[0]}{user.lastname[0]}
+                      {user.firstname[0]}
+                      {user.lastname[0]}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">

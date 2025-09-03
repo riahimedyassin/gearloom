@@ -1,64 +1,128 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Paperclip, Plus, X, ExternalLink, Download, Upload, File, Link, FileImage, FileVideo, FileAudio, FileText, Archive, Code, Globe } from "lucide-react";
-import React, { useState, useRef } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Archive,
+  Code,
+  ExternalLink,
+  File,
+  FileAudio,
+  FileImage,
+  FileText,
+  FileVideo,
+  Globe,
+  Link,
+  Plus,
+  Upload,
+  X,
+} from "lucide-react";
+import React, { useRef, useState } from "react";
 import { Attachment, Task } from "../types";
 
 // Resource type detection functions
-const detectResourceTypeFromFile = (file: File): Attachment['resourceType'] => {
+const detectResourceTypeFromFile = (file: File): Attachment["resourceType"] => {
   const mimeType = file.type.toLowerCase();
-  const extension = file.name.split('.').pop()?.toLowerCase() || '';
-  
+  const extension = file.name.split(".").pop()?.toLowerCase() || "";
+
   // Images
-  if (mimeType.startsWith('image/') || ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'].includes(extension)) {
-    return 'image';
+  if (
+    mimeType.startsWith("image/") ||
+    ["jpg", "jpeg", "png", "gif", "svg", "webp"].includes(extension)
+  ) {
+    return "image";
   }
-  
+
   // Videos
-  if (mimeType.startsWith('video/') || ['mp4', 'webm', 'ogg', 'avi', 'mov', 'mkv'].includes(extension)) {
-    return 'video';
+  if (
+    mimeType.startsWith("video/") ||
+    ["mp4", "webm", "ogg", "avi", "mov", "mkv"].includes(extension)
+  ) {
+    return "video";
   }
-  
+
   // Audio
-  if (mimeType.startsWith('audio/') || ['mp3', 'wav', 'ogg', 'flac', 'm4a'].includes(extension)) {
-    return 'audio';
+  if (
+    mimeType.startsWith("audio/") ||
+    ["mp3", "wav", "ogg", "flac", "m4a"].includes(extension)
+  ) {
+    return "audio";
   }
-  
+
   // Documents
-  if (['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt'].includes(extension) || mimeType.includes('pdf') || mimeType.includes('document')) {
-    return 'document';
+  if (
+    ["pdf", "doc", "docx", "txt", "rtf", "odt"].includes(extension) ||
+    mimeType.includes("pdf") ||
+    mimeType.includes("document")
+  ) {
+    return "document";
   }
-  
+
   // Archives
-  if (['zip', 'rar', '7z', 'tar', 'gz'].includes(extension) || mimeType.includes('zip') || mimeType.includes('compress')) {
-    return 'archive';
+  if (
+    ["zip", "rar", "7z", "tar", "gz"].includes(extension) ||
+    mimeType.includes("zip") ||
+    mimeType.includes("compress")
+  ) {
+    return "archive";
   }
-  
+
   // Code files
-  if (['js', 'ts', 'jsx', 'tsx', 'html', 'css', 'scss', 'json', 'xml', 'sql', 'py', 'java', 'cpp', 'c', 'php', 'rb'].includes(extension)) {
-    return 'code';
+  if (
+    [
+      "js",
+      "ts",
+      "jsx",
+      "tsx",
+      "html",
+      "css",
+      "scss",
+      "json",
+      "xml",
+      "sql",
+      "py",
+      "java",
+      "cpp",
+      "c",
+      "php",
+      "rb",
+    ].includes(extension)
+  ) {
+    return "code";
   }
-  
-  return 'other';
+
+  return "other";
 };
 
-const getResourceTypeIcon = (resourceType: Attachment['resourceType']) => {
+const getResourceTypeIcon = (resourceType: Attachment["resourceType"]) => {
   switch (resourceType) {
-    case 'image': return FileImage;
-    case 'video': return FileVideo;
-    case 'audio': return FileAudio;
-    case 'document': return FileText;
-    case 'archive': return Archive;
-    case 'code': return Code;
-    case 'link': return Globe;
-    default: return File;
+    case "image":
+      return FileImage;
+    case "video":
+      return FileVideo;
+    case "audio":
+      return FileAudio;
+    case "document":
+      return FileText;
+    case "archive":
+      return Archive;
+    case "code":
+      return Code;
+    case "link":
+      return Globe;
+    default:
+      return File;
   }
 };
 
@@ -78,7 +142,7 @@ export const AttachmentsManager: React.FC<AttachmentsManagerProps> = ({
     title: "",
     description: "",
     url: "",
-    resourceType: "link" as Attachment['resourceType'],
+    resourceType: "link" as Attachment["resourceType"],
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -94,15 +158,18 @@ export const AttachmentsManager: React.FC<AttachmentsManagerProps> = ({
   };
 
   const handleAddAttachment = () => {
-    if (newAttachment.title.trim() && (newAttachment.url.trim() || selectedFile)) {
-      let resourceType: Attachment['resourceType'];
-      
+    if (
+      newAttachment.title.trim() &&
+      (newAttachment.url.trim() || selectedFile)
+    ) {
+      let resourceType: Attachment["resourceType"];
+
       if (activeTab === "file" && selectedFile) {
         resourceType = detectResourceTypeFromFile(selectedFile);
       } else {
         resourceType = newAttachment.resourceType;
       }
-      
+
       const attachment: Attachment = {
         id: Date.now(),
         title: newAttachment.title.trim(),
@@ -116,13 +183,18 @@ export const AttachmentsManager: React.FC<AttachmentsManagerProps> = ({
         uploadedAt: new Date().toISOString(),
         uploadedBy: task.assignedTo,
       };
-      
+
       onTaskUpdate({
         ...task,
         attachments: [...(task.attachments || []), attachment],
       });
-      
-      setNewAttachment({ title: "", description: "", url: "", resourceType: "link" });
+
+      setNewAttachment({
+        title: "",
+        description: "",
+        url: "",
+        resourceType: "link",
+      });
       setSelectedFile(null);
       setIsAddingAttachment(false);
       if (fileInputRef.current) {
@@ -142,7 +214,7 @@ export const AttachmentsManager: React.FC<AttachmentsManagerProps> = ({
     if (!bytes) return "";
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + " " + sizes[i];
+    return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
   };
 
   return (
@@ -169,7 +241,11 @@ export const AttachmentsManager: React.FC<AttachmentsManagerProps> = ({
       {isAddingAttachment && (
         <Card className="border-2 border-dashed border-gray-300">
           <CardContent className="p-4">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
               <TabsList className="grid w-full grid-cols-2 mb-4">
                 <TabsTrigger value="url" className="flex items-center gap-2">
                   <Link className="w-3 h-3" />
@@ -190,7 +266,10 @@ export const AttachmentsManager: React.FC<AttachmentsManagerProps> = ({
                     id="title"
                     value={newAttachment.title}
                     onChange={(e) =>
-                      setNewAttachment({ ...newAttachment, title: e.target.value })
+                      setNewAttachment({
+                        ...newAttachment,
+                        title: e.target.value,
+                      })
                     }
                     placeholder="Enter resource title"
                     className="mt-1"
@@ -208,21 +287,30 @@ export const AttachmentsManager: React.FC<AttachmentsManagerProps> = ({
                         type="url"
                         value={newAttachment.url}
                         onChange={(e) =>
-                          setNewAttachment({ ...newAttachment, url: e.target.value })
+                          setNewAttachment({
+                            ...newAttachment,
+                            url: e.target.value,
+                          })
                         }
                         placeholder="https://example.com"
                         className="mt-1"
                       />
                     </div>
-                    
+
                     <div>
-                      <Label htmlFor="resourceType" className="text-sm font-medium">
+                      <Label
+                        htmlFor="resourceType"
+                        className="text-sm font-medium"
+                      >
                         Resource Type
                       </Label>
                       <Select
                         value={newAttachment.resourceType}
                         onValueChange={(value) =>
-                          setNewAttachment({ ...newAttachment, resourceType: value as Attachment['resourceType'] })
+                          setNewAttachment({
+                            ...newAttachment,
+                            resourceType: value as Attachment["resourceType"],
+                          })
                         }
                       >
                         <SelectTrigger className="mt-1">
@@ -266,7 +354,8 @@ export const AttachmentsManager: React.FC<AttachmentsManagerProps> = ({
                       </Button>
                       {selectedFile && (
                         <p className="text-xs text-gray-500 mt-1">
-                          {formatFileSize(selectedFile.size)} • {selectedFile.type || 'Unknown type'}
+                          {formatFileSize(selectedFile.size)} •{" "}
+                          {selectedFile.type || "Unknown type"}
                         </p>
                       )}
                     </div>
@@ -281,7 +370,10 @@ export const AttachmentsManager: React.FC<AttachmentsManagerProps> = ({
                     id="description"
                     value={newAttachment.description}
                     onChange={(e) =>
-                      setNewAttachment({ ...newAttachment, description: e.target.value })
+                      setNewAttachment({
+                        ...newAttachment,
+                        description: e.target.value,
+                      })
                     }
                     placeholder="Optional description"
                     className="mt-1"
@@ -297,7 +389,12 @@ export const AttachmentsManager: React.FC<AttachmentsManagerProps> = ({
                     variant="outline"
                     onClick={() => {
                       setIsAddingAttachment(false);
-                      setNewAttachment({ title: "", description: "", url: "", resourceType: "link" });
+                      setNewAttachment({
+                        title: "",
+                        description: "",
+                        url: "",
+                        resourceType: "link",
+                      });
                       setSelectedFile(null);
                       if (fileInputRef.current) fileInputRef.current.value = "";
                     }}
@@ -321,7 +418,10 @@ export const AttachmentsManager: React.FC<AttachmentsManagerProps> = ({
               className="flex items-start gap-3 p-3 bg-gray-50 rounded border hover:bg-gray-100 transition-colors"
             >
               <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
-                {React.createElement(getResourceTypeIcon(attachment.resourceType), { className: "w-4 h-4 text-blue-600" })}
+                {React.createElement(
+                  getResourceTypeIcon(attachment.resourceType),
+                  { className: "w-4 h-4 text-blue-600" }
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <h4 className="text-sm font-medium text-gray-900 truncate">
@@ -334,7 +434,8 @@ export const AttachmentsManager: React.FC<AttachmentsManagerProps> = ({
                 )}
                 <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
                   <span>
-                    {attachment.uploadedBy.firstname} {attachment.uploadedBy.lastname}
+                    {attachment.uploadedBy.firstname}{" "}
+                    {attachment.uploadedBy.lastname}
                   </span>
                   <span>
                     {new Date(attachment.uploadedAt).toLocaleDateString()}
@@ -347,7 +448,7 @@ export const AttachmentsManager: React.FC<AttachmentsManagerProps> = ({
               <div className="flex items-center gap-1">
                 {attachment.url && (
                   <Button
-                    onClick={() => window.open(attachment.url, '_blank')}
+                    onClick={() => window.open(attachment.url, "_blank")}
                     size="sm"
                     variant="ghost"
                     className="h-6 w-6 p-0"

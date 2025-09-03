@@ -15,7 +15,6 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { CreateProjectDialog } from "./create-project-dialog";
 
 // Modern data structure - streamlined for professional use
 const data = {
@@ -29,13 +28,14 @@ const data = {
       title: "Dashboard",
       url: "/dashboard",
       icon: Home,
-      isActive: true,
+      isActive: false,
       items: [],
     },
     {
       title: "Kanban Board",
-      url: "/kanban",
+      url: "/workspaces/kanban",
       icon: Kanban,
+      isActive: true,
       items: [],
     },
     {
@@ -105,9 +105,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarRail />
       </Sidebar>
 
-      {/* Project Creation Dialog */}
-      <CreateProjectDialog />
-      
       {/* Pomodoro Timer */}
       <PomodoroTimer />
     </>

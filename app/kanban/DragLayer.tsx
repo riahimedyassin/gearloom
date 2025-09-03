@@ -1,11 +1,18 @@
 "use client";
 
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  AlertTriangle,
+  ArrowDown,
+  ArrowUp,
+  GripVertical,
+  MessageCircle,
+  Subtitles,
+  Timer,
+} from "lucide-react";
 import React from "react";
 import { useDragLayer } from "react-dnd";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { AlertTriangle, ArrowUp, ArrowDown, MessageCircle, Subtitles, Timer, GripVertical } from "lucide-react";
 
 interface DragLayerProps {}
 
@@ -50,18 +57,18 @@ export const CustomDragLayer: React.FC<DragLayerProps> = () => {
   }): React.CSSProperties => {
     const { x, y } = currentOffset;
     let transform = `translate(${x}px, ${y}px)`;
-    
+
     // Add different transforms based on item type
     if (itemType === "TASK") {
       transform += ` rotate(3deg)`;
     } else if (itemType === "COLUMN") {
       transform += ` rotate(1deg) scale(1.02)`;
     }
-    
+
     return {
       transform,
       WebkitTransform: transform,
-      transition: 'transform 0.1s ease-out',
+      transition: "transform 0.1s ease-out",
     };
   };
 
@@ -113,7 +120,8 @@ const DragPreview: React.FC<DragPreviewProps> = ({ task }) => {
   const priorityConfig = getPriorityConfig(task.priority);
   const PriorityIcon = priorityConfig.icon;
 
-  const completedSubtasks = task.subtasks?.filter((s: any) => s.done).length || 0;
+  const completedSubtasks =
+    task.subtasks?.filter((s: any) => s.done).length || 0;
   const totalSubtasks = task.subtasks?.length || 0;
   const commentsCount = task.comments?.length || 0;
 
@@ -121,11 +129,11 @@ const DragPreview: React.FC<DragPreviewProps> = ({ task }) => {
   const { pomodoroTimer } = task;
   const activeSession = pomodoroTimer?.sessions.find((s: any) => s.isActive);
   const isTimerRunning = pomodoroTimer?.isActive && activeSession;
-  
+
   const formatTimerDisplay = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   const formatTotalTime = (minutes: number): string => {
@@ -144,7 +152,9 @@ const DragPreview: React.FC<DragPreviewProps> = ({ task }) => {
             <h4 className="text-sm font-medium text-gray-900 line-clamp-2 flex-1 leading-tight">
               {task.title}
             </h4>
-            <PriorityIcon className={`w-4 h-4 ${priorityConfig.color} flex-shrink-0`} />
+            <PriorityIcon
+              className={`w-4 h-4 ${priorityConfig.color} flex-shrink-0`}
+            />
           </div>
 
           {/* Task Description */}
@@ -158,7 +168,11 @@ const DragPreview: React.FC<DragPreviewProps> = ({ task }) => {
           {pomodoroTimer && (
             <div className="flex items-center justify-between py-2 px-2 rounded-md bg-gray-50/50 border">
               <div className="flex items-center gap-2">
-                <Timer className={`w-4 h-4 ${isTimerRunning ? 'text-orange-600' : 'text-gray-500'}`} />
+                <Timer
+                  className={`w-4 h-4 ${
+                    isTimerRunning ? "text-orange-600" : "text-gray-500"
+                  }`}
+                />
                 <div className="text-xs">
                   {isTimerRunning && activeSession ? (
                     <div className="flex flex-col">
@@ -166,8 +180,11 @@ const DragPreview: React.FC<DragPreviewProps> = ({ task }) => {
                         {formatTimerDisplay(activeSession.timeRemaining)}
                       </span>
                       <span className="text-gray-500 text-[10px]">
-                        {activeSession.type === 'work' ? '🍅 Working' : 
-                         activeSession.type === 'shortBreak' ? '☕ Break' : '🛋️ Long Break'}
+                        {activeSession.type === "work"
+                          ? "🍅 Working"
+                          : activeSession.type === "shortBreak"
+                          ? "☕ Break"
+                          : "🛋️ Long Break"}
                       </span>
                     </div>
                   ) : (
@@ -175,7 +192,9 @@ const DragPreview: React.FC<DragPreviewProps> = ({ task }) => {
                       <span className="font-semibold text-gray-700">
                         {formatTotalTime(pomodoroTimer.totalTimeSpent)}
                       </span>
-                      <span className="text-gray-500 text-[10px]">Total time</span>
+                      <span className="text-gray-500 text-[10px]">
+                        Total time
+                      </span>
                     </div>
                   )}
                 </div>
@@ -187,17 +206,17 @@ const DragPreview: React.FC<DragPreviewProps> = ({ task }) => {
           <div className="flex items-center justify-between pt-1">
             {/* Task ID and Counters */}
             <div className="flex items-center gap-2 text-xs text-gray-500">
-              <span className="font-mono font-medium">
-                TASK-{task.id}
-              </span>
-              
+              <span className="font-mono font-medium">TASK-{task.id}</span>
+
               {totalSubtasks > 0 && (
                 <div className="flex items-center gap-1">
                   <Subtitles className="w-3 h-3" />
-                  <span>{completedSubtasks}/{totalSubtasks}</span>
+                  <span>
+                    {completedSubtasks}/{totalSubtasks}
+                  </span>
                 </div>
               )}
-              
+
               {commentsCount > 0 && (
                 <div className="flex items-center gap-1">
                   <MessageCircle className="w-3 h-3" />
@@ -210,7 +229,8 @@ const DragPreview: React.FC<DragPreviewProps> = ({ task }) => {
             {task.assignedTo && (
               <Avatar className="w-6 h-6 border border-gray-200">
                 <AvatarFallback className="text-xs font-medium bg-blue-100 text-blue-700">
-                  {task.assignedTo.firstname[0]}{task.assignedTo.lastname[0]}
+                  {task.assignedTo.firstname[0]}
+                  {task.assignedTo.lastname[0]}
                 </AvatarFallback>
               </Avatar>
             )}
@@ -244,7 +264,9 @@ const ColumnDragPreview: React.FC<ColumnDragPreviewProps> = ({ column }) => {
           </span>
         </div>
         <div className="h-16 bg-gradient-to-r from-blue-50 to-indigo-50 rounded border-2 border-dashed border-blue-300 flex items-center justify-center">
-          <span className="text-xs text-blue-600 font-medium animate-pulse">Moving column...</span>
+          <span className="text-xs text-blue-600 font-medium animate-pulse">
+            Moving column...
+          </span>
         </div>
       </CardContent>
     </Card>

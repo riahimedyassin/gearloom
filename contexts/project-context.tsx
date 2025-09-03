@@ -24,6 +24,16 @@ export interface Project {
     | "academic"
     | "non-profit";
   priority: "low" | "medium" | "high" | "critical";
+  createdAt?: Date;
+  // Enhanced fields for better LLM context
+  goals?: string[];
+  targetAudience?: string;
+  techStack?: string[];
+  timeline?: string;
+  budget?: string;
+  challenges?: string;
+  resources?: string[];
+  milestones?: string[];
 }
 
 interface ProjectContextType {
@@ -31,6 +41,7 @@ interface ProjectContextType {
   setCurrentProject: (project: Project | null) => void;
   projects: Project[];
   setProjects: (projects: Project[]) => void;
+  addProject: (project: Project) => void;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -93,6 +104,7 @@ export function ProjectProvider({
   const [projects, setProjects] = useState<Project[]>(defaultProjects);
 
   const setCurrentProject = (project: Project | null) => {
+    console.log("Setting current project:", project?.name, project?.id);
     setCurrentProjectState(project);
     // Persist to localStorage
     if (project) {
@@ -100,6 +112,13 @@ export function ProjectProvider({
     } else {
       localStorage.removeItem("currentProject");
     }
+  };
+
+  const addProject = (project: Project) => {
+    const updatedProjects = [...projects, project];
+    setProjects(updatedProjects);
+    // Persist to localStorage
+    localStorage.setItem("projects", JSON.stringify(updatedProjects));
   };
 
   // Load from localStorage on client side
@@ -113,6 +132,16 @@ export function ProjectProvider({
         console.error("Error parsing saved project:", error);
       }
     }
+
+    const savedProjects = localStorage.getItem("projects");
+    if (savedProjects) {
+      try {
+        const projectsList = JSON.parse(savedProjects);
+        setProjects(projectsList);
+      } catch (error) {
+        console.error("Error parsing saved projects:", error);
+      }
+    }
   }, []);
 
   return (
@@ -122,6 +151,7 @@ export function ProjectProvider({
         setCurrentProject,
         projects,
         setProjects,
+        addProject,
       }}
     >
       {children}

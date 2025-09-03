@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { usePomodoroStore } from "@/stores";
 import {
   AlertTriangle,
   Archive,
@@ -30,7 +31,6 @@ import {
 import React from "react";
 import { useDrag } from "react-dnd";
 import { Task as TaskType } from "./types";
-import { usePomodoroStore } from "@/stores";
 
 interface TaskProps {
   task: TaskType;
@@ -51,16 +51,16 @@ export const TaskComponent: React.FC<TaskProps> = ({
   onTimerClick,
   isActiveTimer = false,
 }) => {
-  const { 
-    linkedTask, 
-    timerState, 
-    timeLeft, 
+  const {
+    linkedTask,
+    timerState,
+    timeLeft,
     sessionType,
-    startTimer, 
-    pauseTimer, 
+    startTimer,
+    pauseTimer,
     stopTimer,
     openTimer,
-    setLinkedTask
+    setLinkedTask,
   } = usePomodoroStore();
 
   // Check if this task is currently linked to the pomodoro timer
@@ -127,7 +127,8 @@ export const TaskComponent: React.FC<TaskProps> = ({
   // Pomodoro timer logic - now uses Zustand store
   const { pomodoroTimer } = task;
   const activeSession = pomodoroTimer?.sessions.find((s) => s.isActive);
-  const isTimerRunning = isTimerActive || (pomodoroTimer?.isActive && activeSession);
+  const isTimerRunning =
+    isTimerActive || (pomodoroTimer?.isActive && activeSession);
 
   const formatTimerDisplay = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
@@ -289,7 +290,17 @@ export const TaskComponent: React.FC<TaskProps> = ({
                           {formatTimerDisplay(timeLeft)}
                         </span>
                         <span className="text-gray-500 dark:text-gray-400 text-[10px]">
-                          {timerState === "running" ? "🍅 Active" : timerState === "paused" ? "⏸️ Paused" : "⏹️ Stopped"} • {sessionType === "work" ? "Work" : sessionType === "short-break" ? "Break" : "Long Break"}
+                          {timerState === "running"
+                            ? "🍅 Active"
+                            : timerState === "paused"
+                            ? "⏸️ Paused"
+                            : "⏹️ Stopped"}{" "}
+                          •{" "}
+                          {sessionType === "work"
+                            ? "Work"
+                            : sessionType === "short-break"
+                            ? "Break"
+                            : "Long Break"}
                         </span>
                       </div>
                     ) : isTimerRunning && activeSession ? (
@@ -308,7 +319,9 @@ export const TaskComponent: React.FC<TaskProps> = ({
                     ) : (
                       <div className="flex flex-col">
                         <span className="font-semibold text-gray-700 dark:text-gray-300">
-                          {pomodoroTimer ? formatTotalTime(pomodoroTimer.totalTimeSpent) : "0m"}
+                          {pomodoroTimer
+                            ? formatTotalTime(pomodoroTimer.totalTimeSpent)
+                            : "0m"}
                         </span>
                         <span className="text-gray-500 dark:text-gray-400 text-[10px]">
                           Total time
@@ -337,7 +350,7 @@ export const TaskComponent: React.FC<TaskProps> = ({
                       <Play className="w-3 h-3 text-green-600 dark:text-green-400" />
                     )}
                   </Button>
-                  
+
                   {/* Stop button - only show when timer is active */}
                   {(isTaskLinked || isTimerRunning) && (
                     <Button
@@ -388,7 +401,7 @@ export const TaskComponent: React.FC<TaskProps> = ({
         </CardContent>
 
         {/* Animated shine border for active timer */}
-        {(isTaskLinked && timerState === "running") && (
+        {isTaskLinked && timerState === "running" && (
           <ShineBorder
             className="absolute inset-0 rounded-[inherit]"
             shineColor={["#3B82F6", "#60A5FA", "#93C5FD"]}
@@ -396,7 +409,7 @@ export const TaskComponent: React.FC<TaskProps> = ({
             borderWidth={2}
           />
         )}
-        
+
         {/* Legacy timer shine border */}
         {isTimerRunning && !isTaskLinked && (
           <ShineBorder

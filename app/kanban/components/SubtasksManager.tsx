@@ -1,10 +1,10 @@
 "use client";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ListTodo, Plus, X, User, Calendar, Edit2, Check } from "lucide-react";
+import { Calendar, Check, Edit2, ListTodo, Plus, User, X } from "lucide-react";
 import React, { useState } from "react";
 import { Subtask, Task, User as UserType } from "../types";
 import UserCombobox from "./UserCombobox";
@@ -19,11 +19,15 @@ export const SubtasksManager: React.FC<SubtasksManagerProps> = ({
   onTaskUpdate,
 }) => {
   const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
-  const [newSubtaskAssignedTo, setNewSubtaskAssignedTo] = useState<UserType | undefined>(undefined);
+  const [newSubtaskAssignedTo, setNewSubtaskAssignedTo] = useState<
+    UserType | undefined
+  >(undefined);
   const [isAddingSubtask, setIsAddingSubtask] = useState(false);
   const [editingSubtask, setEditingSubtask] = useState<number | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
-  const [editingAssignedTo, setEditingAssignedTo] = useState<UserType | undefined>(undefined);
+  const [editingAssignedTo, setEditingAssignedTo] = useState<
+    UserType | undefined
+  >(undefined);
 
   const handleAddSubtask = () => {
     if (newSubtaskTitle.trim()) {
@@ -62,7 +66,10 @@ export const SubtasksManager: React.FC<SubtasksManagerProps> = ({
     });
   };
 
-  const handleUpdateSubtaskAssignee = (subtaskId: number, assignedTo: UserType | undefined) => {
+  const handleUpdateSubtaskAssignee = (
+    subtaskId: number,
+    assignedTo: UserType | undefined
+  ) => {
     const updatedSubtasks = task.subtasks?.map((subtask) =>
       subtask.id === subtaskId ? { ...subtask, assignedTo } : subtask
     );
@@ -81,8 +88,12 @@ export const SubtasksManager: React.FC<SubtasksManagerProps> = ({
   const handleSaveSubtaskEdit = () => {
     if (editingSubtask && editingTitle.trim()) {
       const updatedSubtasks = task.subtasks?.map((subtask) =>
-        subtask.id === editingSubtask 
-          ? { ...subtask, title: editingTitle.trim(), assignedTo: editingAssignedTo }
+        subtask.id === editingSubtask
+          ? {
+              ...subtask,
+              title: editingTitle.trim(),
+              assignedTo: editingAssignedTo,
+            }
           : subtask
       );
       onTaskUpdate({
@@ -140,7 +151,7 @@ export const SubtasksManager: React.FC<SubtasksManagerProps> = ({
                   className="accent-blue-600 w-5 h-5 mt-0.5"
                   disabled={editingSubtask === subtask.id}
                 />
-                
+
                 {editingSubtask === subtask.id ? (
                   // Edit mode
                   <div className="flex-1 space-y-3">
@@ -170,15 +181,20 @@ export const SubtasksManager: React.FC<SubtasksManagerProps> = ({
                         />
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-1 text-xs text-slate-500">
                       <User className="w-3 h-3" />
-                      <span>Created by {subtask.createdBy.firstname} {subtask.createdBy.lastname}</span>
+                      <span>
+                        Created by {subtask.createdBy.firstname}{" "}
+                        {subtask.createdBy.lastname}
+                      </span>
                       <span>•</span>
                       <Calendar className="w-3 h-3" />
-                      <span>{new Date(subtask.createdAt).toLocaleDateString()}</span>
+                      <span>
+                        {new Date(subtask.createdAt).toLocaleDateString()}
+                      </span>
                     </div>
-                    
+
                     <div className="flex gap-2">
                       <Button
                         onClick={handleSaveSubtaskEdit}
@@ -213,32 +229,39 @@ export const SubtasksManager: React.FC<SubtasksManagerProps> = ({
                         >
                           {subtask.title}
                         </span>
-                        
+
                         <div className="flex items-center gap-4 mt-2">
                           <div className="flex items-center gap-1 text-xs text-slate-500">
                             <User className="w-3 h-3" />
-                            <span>Created by {subtask.createdBy.firstname} {subtask.createdBy.lastname}</span>
+                            <span>
+                              Created by {subtask.createdBy.firstname}{" "}
+                              {subtask.createdBy.lastname}
+                            </span>
                             <span>•</span>
                             <Calendar className="w-3 h-3" />
-                            <span>{new Date(subtask.createdAt).toLocaleDateString()}</span>
+                            <span>
+                              {new Date(subtask.createdAt).toLocaleDateString()}
+                            </span>
                           </div>
-                          
+
                           {subtask.assignedTo && (
                             <div className="flex items-center gap-2 text-xs">
                               <span>•</span>
                               <Avatar className="w-4 h-4">
                                 <AvatarFallback className="text-xs">
-                                  {subtask.assignedTo.firstname[0]}{subtask.assignedTo.lastname[0]}
+                                  {subtask.assignedTo.firstname[0]}
+                                  {subtask.assignedTo.lastname[0]}
                                 </AvatarFallback>
                               </Avatar>
                               <span className="text-slate-600">
-                                {subtask.assignedTo.firstname} {subtask.assignedTo.lastname}
+                                {subtask.assignedTo.firstname}{" "}
+                                {subtask.assignedTo.lastname}
                               </span>
                             </div>
                           )}
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Button
                           onClick={() => handleStartEditSubtask(subtask)}
