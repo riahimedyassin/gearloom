@@ -42,7 +42,7 @@ export const createProjectSchema = z.object({
     "non_profit",
   ]),
 
-  priority: z.enum(["low", "medium", "high", "critical"]),
+  priority: z.enum(["low", "medium", "high", "critical"]).default("medium"),
 
   targetAudience: z
     .string()
@@ -69,8 +69,6 @@ export const createProjectSchema = z.object({
     "6-12-months",
     "1-year+",
   ]).optional(),
-
-  teamSize: z.enum(["solo", "2-3", "4-6", "7-10", "11-20", "20+"]).optional(),
 
   goals: z.array(z.string()).min(1, "Please add at least one project goal").optional(),
 

@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -45,7 +44,6 @@ import {
 import { useUIStore } from "@/stores";
 import { useCreateProject } from "@/hooks/useProject";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import {
   AlertTriangle,
@@ -59,6 +57,8 @@ import {
   Users,
   X,
 } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 interface MultiSelectInputProps {
   value: string[];
@@ -218,32 +218,6 @@ const projectTypeOptions = [
   { value: "other", label: "Other", icon: "🔧" },
 ];
 
-const projectCategoryOptions = [
-  { value: "startup", label: "Startup", icon: "🚀" },
-  { value: "enterprise", label: "Enterprise", icon: "🏢" },
-  { value: "personal", label: "Personal", icon: "👤" },
-  { value: "freelance", label: "Freelance", icon: "💼" },
-  { value: "open_source", label: "Open Source", icon: "🔓" },
-  { value: "academic", label: "Academic", icon: "🎓" },
-  { value: "non_profit", label: "Non-Profit", icon: "🤝" },
-];
-
-const priorityOptions = [
-  { value: "low", label: "Low Priority", icon: "🟢" },
-  { value: "medium", label: "Medium Priority", icon: "🟡" },
-  { value: "high", label: "High Priority", icon: "🟠" },
-  { value: "critical", label: "Critical", icon: "🔴" },
-];
-
-const timelineOptions = [
-  { value: "1-week", label: "1 Week", icon: "⚡" },
-  { value: "2-4-weeks", label: "2-4 Weeks", icon: "📅" },
-  { value: "1-3-months", label: "1-3 Months", icon: "📆" },
-  { value: "3-6-months", label: "3-6 Months", icon: "🗓️" },
-  { value: "6-12-months", label: "6-12 Months", icon: "📋" },
-  { value: "1-year+", label: "1 Year+", icon: "📊" },
-];
-
 // Navigation steps configuration
 const steps = [
   {
@@ -261,7 +235,7 @@ const steps = [
   {
     id: 3,
     title: "Project Details",
-    description: "Timeline and priorities",
+    description: "Timeline and team",
     icon: Calendar,
   },
   {
@@ -283,15 +257,15 @@ export function CreateProjectDialog() {
   const [currentStep, setCurrentStep] = useState(1);
   const createProjectMutation = useCreateProject();
 
-  const form = useForm({
+  const form = useForm<CreateProjectFormData>({
     resolver: zodResolver(createProjectSchema),
-    mode: "onChange" as const,
+    mode: "onChange",
     defaultValues: {
       name: "",
       description: "",
       type: undefined,
       category: undefined,
-      priority: "medium" as const,
+      priority: "medium",
       targetAudience: "",
       techStack: [],
       keywords: [],
@@ -410,6 +384,7 @@ export function CreateProjectDialog() {
               const Icon = step.icon;
               const isCompleted = currentStep > step.id;
               const isCurrent = currentStep === step.id;
+              const isUpcoming = currentStep < step.id;
 
               return (
                 <div
@@ -487,9 +462,9 @@ export function CreateProjectDialog() {
                           </FormLabel>
                           <FormControl>
                             <Input
-                              {...field}
                               placeholder="Enter your project name (e.g., E-commerce Platform, Mobile Weather App)"
                               className="text-base h-12"
+                              {...field}
                             />
                           </FormControl>
                           <FormDescription>
@@ -510,9 +485,9 @@ export function CreateProjectDialog() {
                           </FormLabel>
                           <FormControl>
                             <Textarea
-                              {...field}
                               placeholder="Describe what your project does, its main purpose, and key features..."
                               className="text-base min-h-[120px] resize-none"
+                              {...field}
                             />
                           </FormControl>
                           <FormDescription>
@@ -553,15 +528,21 @@ export function CreateProjectDialog() {
                             defaultValue={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger className="h-12">
+                              <SelectTrigger className="h-12 text-base">
                                 <SelectValue placeholder="Select project type" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
+                            <SelectContent className="max-h-[300px]">
                               {projectTypeOptions.map((option) => (
-                                <SelectItem key={option.value} value={option.value}>
-                                  <div className="flex items-center gap-2">
-                                    <span>{option.icon}</span>
+                                <SelectItem
+                                  key={option.value}
+                                  value={option.value}
+                                  className="py-3"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-lg">
+                                      {option.icon}
+                                    </span>
                                     <span>{option.label}</span>
                                   </div>
                                 </SelectItem>
@@ -590,19 +571,32 @@ export function CreateProjectDialog() {
                             defaultValue={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger className="h-12">
+                              <SelectTrigger className="h-12 text-base">
                                 <SelectValue placeholder="Select project category" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {projectCategoryOptions.map((option) => (
-                                <SelectItem key={option.value} value={option.value}>
-                                  <div className="flex items-center gap-2">
-                                    <span>{option.icon}</span>
-                                    <span>{option.label}</span>
-                                  </div>
-                                </SelectItem>
-                              ))}
+                              <SelectItem value="startup">
+                                🚀 Startup
+                              </SelectItem>
+                              <SelectItem value="enterprise">
+                                🏢 Enterprise
+                              </SelectItem>
+                              <SelectItem value="personal">
+                                👤 Personal
+                              </SelectItem>
+                              <SelectItem value="freelance">
+                                💼 Freelance
+                              </SelectItem>
+                              <SelectItem value="open_source">
+                                🌍 Open Source
+                              </SelectItem>
+                              <SelectItem value="academic">
+                                🎓 Academic
+                              </SelectItem>
+                              <SelectItem value="non_profit">
+                                🤝 Non-Profit
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                           <FormDescription>
@@ -637,28 +631,35 @@ export function CreateProjectDialog() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-lg font-medium">
-                              Project Priority *
+                              Priority Level *
                             </FormLabel>
                             <Select
                               onValueChange={field.onChange}
                               defaultValue={field.value}
                             >
                               <FormControl>
-                                <SelectTrigger className="h-12">
+                                <SelectTrigger className="h-12 text-base">
                                   <SelectValue placeholder="Select priority" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {priorityOptions.map((option) => (
-                                  <SelectItem key={option.value} value={option.value}>
-                                    <div className="flex items-center gap-2">
-                                      <span>{option.icon}</span>
-                                      <span>{option.label}</span>
-                                    </div>
-                                  </SelectItem>
-                                ))}
+                                <SelectItem value="low">
+                                  🟢 Low Priority
+                                </SelectItem>
+                                <SelectItem value="medium">
+                                  🟡 Medium Priority
+                                </SelectItem>
+                                <SelectItem value="high">
+                                  🟠 High Priority
+                                </SelectItem>
+                                <SelectItem value="critical">
+                                  🔴 Critical Priority
+                                </SelectItem>
                               </SelectContent>
                             </Select>
+                            <FormDescription>
+                              Set the priority level for this project
+                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -670,56 +671,114 @@ export function CreateProjectDialog() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-lg font-medium">
-                              Expected Timeline
+                              Timeline
                             </FormLabel>
                             <Select
                               onValueChange={field.onChange}
                               defaultValue={field.value}
                             >
                               <FormControl>
-                                <SelectTrigger className="h-12">
-                                  <SelectValue placeholder="Select timeline" />
+                                <SelectTrigger className="h-12 text-base">
+                                  <SelectValue placeholder="Expected timeline" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {timelineOptions.map((option) => (
-                                  <SelectItem key={option.value} value={option.value}>
-                                    <div className="flex items-center gap-2">
-                                      <span>{option.icon}</span>
-                                      <span>{option.label}</span>
-                                    </div>
-                                  </SelectItem>
-                                ))}
+                                <SelectItem value="1_week">
+                                  📅 1 Week
+                                </SelectItem>
+                                <SelectItem value="2_weeks">
+                                  📅 2 Weeks
+                                </SelectItem>
+                                <SelectItem value="1_month">
+                                  📅 1 Month
+                                </SelectItem>
+                                <SelectItem value="3_months">
+                                  📅 3 Months
+                                </SelectItem>
+                                <SelectItem value="6_months">
+                                  📅 6 Months
+                                </SelectItem>
+                                <SelectItem value="1_year">
+                                  📅 1 Year
+                                </SelectItem>
+                                <SelectItem value="ongoing">
+                                  ♾️ Ongoing
+                                </SelectItem>
                               </SelectContent>
                             </Select>
+                            <FormDescription>
+                              Estimated time to complete this project
+                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
 
-                    <FormField
-                      control={form.control}
-                      name="targetAudience"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-lg font-medium">
-                            Target Audience
-                          </FormLabel>
-                          <FormControl>
-                            <Textarea
-                              {...field}
-                              placeholder="Describe your target users, customers, or audience..."
-                              className="text-base min-h-[80px] resize-none"
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Who will use or benefit from this project?
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField
+                        control={form.control}
+                        name="teamSize"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-lg font-medium">
+                              Team Size
+                            </FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger className="h-12 text-base">
+                                  <SelectValue placeholder="Team size" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="solo">
+                                  👤 Solo (Just me)
+                                </SelectItem>
+                                <SelectItem value="small">
+                                  👥 Small (2-5 people)
+                                </SelectItem>
+                                <SelectItem value="medium">
+                                  👥 Medium (6-15 people)
+                                </SelectItem>
+                                <SelectItem value="large">
+                                  👥 Large (16+ people)
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>
+                              How many people will be working on this project?
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="targetAudience"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-lg font-medium">
+                              Target Audience
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Who is this project for? (e.g., Small businesses, Students, Developers)"
+                                className="text-base h-12"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Describe your primary target users or audience
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
               )}
@@ -762,6 +821,28 @@ export function CreateProjectDialog() {
                       )}
                     />
 
+                    {/* Display Selected Technologies */}
+                    <div className="space-y-4">
+                      {(form.watch("techStack") || []).length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-medium">
+                            Selected Technologies:
+                          </h4>
+                          <div className="flex flex-wrap gap-1">
+                            {(form.watch("techStack") || []).map((tech) => (
+                              <Badge
+                                key={tech}
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                {tech}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
                     <FormField
                       control={form.control}
                       name="keywords"
@@ -787,6 +868,28 @@ export function CreateProjectDialog() {
                         </FormItem>
                       )}
                     />
+
+                    {/* Display Selected Keywords */}
+                    <div className="space-y-4">
+                      {(form.watch("keywords") || []).length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-medium">
+                            Project Keywords:
+                          </h4>
+                          <div className="flex flex-wrap gap-1">
+                            {(form.watch("keywords") || []).map((keyword) => (
+                              <Badge
+                                key={keyword}
+                                variant="secondary"
+                                className="text-xs"
+                              >
+                                {keyword}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               )}
@@ -817,13 +920,25 @@ export function CreateProjectDialog() {
                             <MultiSelectInput
                               value={field.value || []}
                               onChange={field.onChange}
-                              options={[]}
-                              placeholder="Add your project goals (e.g., increase user engagement, reduce processing time)..."
-                              maxItems={10}
+                              options={[
+                                "Increase user engagement",
+                                "Improve performance",
+                                "Reduce costs",
+                                "Scale the system",
+                                "Learn new technology",
+                                "Build MVP",
+                                "Launch product",
+                                "Optimize workflow",
+                                "Enhance user experience",
+                                "Generate revenue",
+                              ]}
+                              placeholder="What are your main goals? (e.g., Launch MVP, Scale to 10k users, Reduce load time)..."
+                              maxItems={8}
                             />
                           </FormControl>
                           <FormDescription>
-                            What do you want to achieve with this project?
+                            Define the key objectives and success criteria for
+                            your project
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -842,13 +957,25 @@ export function CreateProjectDialog() {
                             <MultiSelectInput
                               value={field.value || []}
                               onChange={field.onChange}
-                              options={[]}
-                              placeholder="What challenges do you anticipate? (e.g., performance optimization, user adoption)..."
-                              maxItems={8}
+                              options={[
+                                "Technical complexity",
+                                "Time constraints",
+                                "Budget limitations",
+                                "Team coordination",
+                                "User adoption",
+                                "Scalability",
+                                "Security concerns",
+                                "Integration challenges",
+                                "Performance issues",
+                                "Market competition",
+                              ]}
+                              placeholder="What challenges do you anticipate? (e.g., Complex integrations, Tight deadline)..."
+                              maxItems={6}
                             />
                           </FormControl>
                           <FormDescription>
-                            Identify potential roadblocks or technical challenges
+                            Identify potential obstacles or areas where you
+                            might need help
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -865,14 +992,14 @@ export function CreateProjectDialog() {
                           </FormLabel>
                           <FormControl>
                             <Textarea
+                              placeholder="Any additional context that would help AI understand your project better? (business requirements, constraints, preferences, etc.)"
+                              className="text-base min-h-[100px] resize-none"
                               {...field}
-                              placeholder="Any additional context, constraints, or important information about your project..."
-                              className="text-base min-h-[120px] resize-none"
                             />
                           </FormControl>
                           <FormDescription>
-                            Provide any additional information that would help AI
-                            understand your project better
+                            Provide any other relevant information that would
+                            help in project planning and development
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -917,11 +1044,10 @@ export function CreateProjectDialog() {
                   ) : (
                     <Button
                       type="submit"
-                      disabled={createProjectMutation.isPending}
                       className="flex items-center gap-2 h-11 px-8 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
                     >
                       <Plus className="w-4 h-4" />
-                      {createProjectMutation.isPending ? "Creating..." : "Create Project"}
+                      Create Project
                     </Button>
                   )}
                 </div>

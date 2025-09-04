@@ -22,6 +22,7 @@ import {
   Timer
 } from "lucide-react";
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 interface CommandPaletteProps {
   onCreateTask?: () => void;
@@ -34,12 +35,12 @@ export function CommandPalette({
   onCreateProject,
   onOpenSettings,
 }: CommandPaletteProps) {
+  const router = useRouter();
   const {
     commandPaletteOpen,
     closeCommandPalette,
     toggleTheme,
     openCreateTaskModal,
-    openCreateProjectModal,
   } = useUIStore();
 
   const { openTimer } = usePomodoroStore();
@@ -85,7 +86,7 @@ export function CommandPalette({
           <CommandItem
             onSelect={() =>
               runCommand(() => {
-                openCreateProjectModal();
+                router.push("/workspaces/create");
                 onCreateProject?.();
               })
             }

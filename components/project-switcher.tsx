@@ -19,20 +19,43 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useProject, Project } from "@/contexts/project-context";
+import { useProjects } from "@/hooks/useProject";
+import { useProject } from "@/contexts/project-context";
+import { Project } from "@/lib/types/project";
 
 const getProjectIcon = (type: Project["type"]) => {
   switch (type) {
-    case "web-development":
+    case "web_development":
       return "💻";
-    case "mobile-app":
+    case "mobile_app":
       return "📱";
-    case "data-science":
+    case "data_science":
       return "📊";
     case "startup":
       return "🚀";
     case "learning":
       return "📚";
+    case "api_backend":
+      return "⚡";
+    case "desktop_app":
+      return "🖥️";
+    case "machine_learning":
+      return "🤖";
+    case "research":
+      return "🔬";
+    case "marketing":
+      return "📢";
+    case "design":
+      return "🎨";
+    case "business":
+      return "💼";
+    case "education":
+      return "🎓";
+    case "personal":
+      return "👤";
+    case "other":
+    case "custom":
+      return "🔧";
     default:
       return "📁";
   }
@@ -55,21 +78,92 @@ const getPriorityColor = (priority: Project["priority"]) => {
 
 export function ProjectSwitcher() {
   const { isMobile } = useSidebar();
-  const { currentProject, setCurrentProject, projects } = useProject();
   const router = useRouter();
+  const { data: projects = [], isLoading, error } = useProjects();
+  const [currentProjectId, setCurrentProjectId] = React.useState<number | null>(
+    projects.length > 0 ? projects[0].id : null
+  );
+
+  // Update current project when projects load
+  React.useEffect(() => {
+    if (projects.length > 0 && !currentProjectId) {
+      setCurrentProjectId(projects[0].id);
+    }
+  }, [projects, currentProjectId]);
+
+  const currentProject = projects.find(p => p.id === currentProjectId) || projects[0];
 
   const handleCreateProject = () => {
     router.push("/workspaces/create");
   };
 
-  if (!currentProject) {
-    return null;
+  const handleProjectSwitch = (project: Project) => {
+    console.log("Switching to project:", project.name);
+    setCurrentProjectId(project.id);
+  };
+
+  if (isLoading) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton size="lg" className="h-12 rounded-lg">
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-lg animate-pulse bg-muted">
+              📁
+            </div>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold text-muted-foreground animate-pulse">
+                Loading projects...
+              </span>
+            </div>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
   }
 
-  const handleProjectSwitch = (project: Project) => {
-    console.log("Switching from", currentProject?.name, "to", project.name);
-    setCurrentProject(project);
-  };
+  if (error) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton size="lg" className="h-12 rounded-lg" onClick={handleCreateProject}>
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-lg">
+              <Plus className="size-4" />
+            </div>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold text-destructive">
+                Failed to load projects
+              </span>
+              <span className="truncate text-xs text-muted-foreground">
+                Click to create your first project
+              </span>
+            </div>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
+  }
+
+  if (!currentProject) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton size="lg" className="h-12 rounded-lg" onClick={handleCreateProject}>
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-lg">
+              <Plus className="size-4" />
+            </div>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold text-muted-foreground">
+                No projects
+              </span>
+              <span className="truncate text-xs text-muted-foreground">
+                Create your first project
+              </span>
+            </div>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
+  }
 
   return (
     <SidebarMenu>
@@ -107,7 +201,7 @@ export function ProjectSwitcher() {
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-xs text-muted-foreground">
-              Switch Projects
+              Switch Projects ({projects.length})
             </DropdownMenuLabel>
             {projects.map((project, index) => (
               <DropdownMenuItem
@@ -124,6 +218,11 @@ export function ProjectSwitcher() {
                     <span className={`text-xs ${getPriorityColor(project.priority)}`}>
                       {project.priority}
                     </span>
+                    {project.id === currentProjectId && (
+                      <span className="text-xs bg-primary text-primary-foreground px-1 rounded">
+                        current
+                      </span>
+                    )}
                   </div>
                   <span className="text-xs text-muted-foreground truncate">
                     {project.description}
